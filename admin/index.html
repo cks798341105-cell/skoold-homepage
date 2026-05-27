@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>스쿨디 관리자 — SKOOL;D Admin</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
+<style>
+:root{--r:#C8302B;--g:#0E7C4F;--b:#1E3A8A;--k:#1a1a1a;--gr:#888;--line:#e5e5e5;--bg:#f7f7f5}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Pretendard Variable','Pretendard',-apple-system,sans-serif;background:var(--bg);color:var(--k);-webkit-font-smoothing:antialiased;font-size:14px}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit;font-size:inherit}
+input,textarea,select{font-family:inherit;font-size:14px}
+a{color:inherit;text-decoration:none}
+
+.screen{display:none}
+.screen.active{display:block}
+
+/* LOGIN */
+#login{min-height:100vh;display:none;align-items:center;justify-content:center;padding:24px;background:linear-gradient(135deg,#1a1a1a 0%,#2a2a2a 100%)}
+#login.active{display:flex}
+.login-box{background:#fff;padding:48px 40px;border-radius:16px;width:100%;max-width:420px;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.login-logo{font-family:'Roboto','Helvetica',sans-serif;font-size:32px;font-weight:800;letter-spacing:-1.5px;margin-bottom:6px}
+.login-logo .s{color:var(--r);font-style:italic}
+.login-sub{font-size:11px;letter-spacing:3px;color:var(--gr);margin-bottom:36px;font-family:monospace}
+.login-box h2{font-size:20px;margin-bottom:24px;letter-spacing:-.5px}
+.login-field{margin-bottom:16px}
+.login-field label{display:block;font-size:11px;font-weight:700;letter-spacing:2px;color:var(--gr);margin-bottom:8px}
+.login-field input{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:6px;transition:.2s}
+.login-field input:focus{outline:none;border-color:var(--k)}
+.login-btn{width:100%;padding:14px;background:var(--k);color:#fff;font-weight:700;letter-spacing:2px;border-radius:6px;margin-top:8px;transition:.2s}
+.login-btn:hover{background:var(--r)}
+.login-btn:disabled{opacity:.5;cursor:wait}
+.login-error{font-size:12px;color:var(--r);margin-top:12px;text-align:center;min-height:18px}
+.login-foot{margin-top:24px;padding-top:20px;border-top:1px solid var(--line);font-size:11px;color:var(--gr);text-align:center;letter-spacing:1px;font-family:monospace}
+
+/* ADMIN LAYOUT */
+#admin{display:none;min-height:100vh}
+#admin.active{display:flex}
+.sidebar{width:240px;background:var(--k);color:#fff;flex-shrink:0;display:flex;flex-direction:column;position:sticky;top:0;height:100vh}
+.sb-head{padding:24px 22px;border-bottom:1px solid rgba(255,255,255,.1)}
+.sb-logo{font-family:'Roboto','Helvetica',sans-serif;font-size:22px;font-weight:800;letter-spacing:-1px}
+.sb-logo .s{color:var(--r);font-style:italic}
+.sb-tag{font-size:9px;letter-spacing:3px;color:#888;margin-top:4px;font-family:monospace}
+.sb-nav{flex:1;padding:16px 0;overflow-y:auto}
+.sb-group{font-size:10px;letter-spacing:2px;color:#555;padding:14px 22px 8px;font-family:monospace}
+.sb-item{display:flex;align-items:center;gap:12px;padding:11px 22px;color:#aaa;border-left:3px solid transparent;cursor:pointer;transition:.2s;font-size:13px}
+.sb-item:hover{color:#fff;background:rgba(255,255,255,.05)}
+.sb-item.active{color:#fff;background:rgba(200,48,43,.15);border-left-color:var(--r)}
+.sb-item .badge{margin-left:auto;background:var(--r);color:#fff;font-size:10px;padding:2px 7px;border-radius:99px;font-weight:700}
+.sb-foot{padding:14px 22px;border-top:1px solid rgba(255,255,255,.1);display:flex;align-items:center;gap:10px}
+.sb-avatar{width:32px;height:32px;border-radius:50%;background:var(--r);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0}
+.sb-user{flex:1;min-width:0}
+.sb-user .name{font-size:13px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sb-user .role{font-size:10px;color:#888;letter-spacing:1px;font-family:monospace}
+.sb-logout{padding:6px;color:#888;border-radius:4px}
+.sb-logout:hover{color:#fff;background:rgba(255,255,255,.1)}
+
+.main{flex:1;min-width:0}
+.topbar{background:#fff;border-bottom:1px solid var(--line);padding:18px 32px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:10}
+.topbar .l h1{font-size:22px;letter-spacing:-.5px;margin-bottom:2px}
+.topbar .l .crumb{font-size:10px;color:var(--gr);letter-spacing:2px;font-family:monospace}
+.topbar .r{display:flex;gap:8px;align-items:center}
+.btn{padding:8px 16px;border:1px solid var(--line);border-radius:6px;font-size:12px;font-weight:600;background:#fff;transition:.2s;display:inline-flex;align-items:center;gap:6px}
+.btn:hover{border-color:var(--k)}
+.btn-primary{background:var(--r);color:#fff;border-color:var(--r)}
+.btn-primary:hover{background:#a82420;border-color:#a82420}
+.btn-k{background:var(--k);color:#fff;border-color:var(--k)}
+.btn-sm{padding:5px 10px;font-size:11px}
+
+#content{padding:28px 32px}
+
+/* CARDS */
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
+.stat-card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:20px;cursor:pointer;transition:.2s}
+.stat-card:hover{border-color:var(--k);transform:translateY(-2px)}
+.stat-label{font-size:10px;letter-spacing:2px;color:var(--gr);font-family:monospace;margin-bottom:8px}
+.stat-num{font-size:32px;font-weight:300;font-family:'Roboto',sans-serif;letter-spacing:-1px;line-height:1}
+.stat-sub{font-size:11px;color:var(--gr);margin-top:4px}
+
+.card{background:#fff;border:1px solid var(--line);border-radius:10px;margin-bottom:16px;overflow:hidden}
+.card-head{padding:16px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}
+.card-head h3{font-size:14px;font-weight:700;letter-spacing:-.3px}
+.card-head .ct{font-size:11px;color:var(--gr);font-family:monospace}
+.card-body{padding:0}
+
+/* TABLE */
+table{width:100%;border-collapse:collapse}
+thead th{background:#fafafa;font-size:10px;letter-spacing:1.5px;color:var(--gr);font-weight:600;text-align:left;padding:10px 16px;border-bottom:1px solid var(--line)}
+tbody td{padding:12px 16px;border-bottom:1px solid #f5f5f5;font-size:13px;vertical-align:middle}
+tbody tr:hover{background:#fafafa}
+tbody tr:last-child td{border-bottom:0}
+
+.tag{display:inline-block;font-size:10px;font-weight:700;letter-spacing:1px;padding:3px 9px;border-radius:99px;color:#fff}
+.tag.r{background:var(--r)} .tag.g{background:var(--g)} .tag.b{background:var(--b)} .tag.k{background:var(--gr)}
+.tag.pending{background:#f59e0b}
+.tag.new{background:#3b82f6}
+.tag.contacted{background:#8b5cf6}
+.tag.quoted{background:#06b6d4}
+.tag.won{background:var(--g)}
+.tag.lost,.tag.closed{background:#888}
+.tag.draft{background:#888}
+.tag.published{background:var(--g)}
+.tag.answered{background:var(--g)}
+
+/* FILTERS */
+.filters{padding:12px 16px;display:flex;gap:6px;flex-wrap:wrap;border-bottom:1px solid var(--line);background:#fafafa}
+.filter-btn{padding:6px 12px;font-size:11px;font-weight:600;border:1px solid var(--line);border-radius:99px;background:#fff;transition:.2s}
+.filter-btn.active{background:var(--k);color:#fff;border-color:var(--k)}
+.filter-btn .ct{margin-left:4px;font-family:monospace;opacity:.7}
+
+/* ACTIONS */
+.row-actions{display:flex;gap:4px;justify-content:flex-end}
+.icon-btn{width:30px;height:30px;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;transition:.15s;color:var(--gr)}
+.icon-btn:hover{background:#f0f0f0;color:var(--k)}
+.icon-btn.danger:hover{background:#fee2e2;color:var(--r)}
+
+/* EMPTY */
+.empty{padding:60px 20px;text-align:center;color:var(--gr)}
+.empty .ico{font-size:36px;opacity:.3;margin-bottom:12px}
+.empty h4{font-size:14px;color:#666;margin-bottom:6px}
+.empty p{font-size:12px}
+
+/* MODAL */
+#modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:flex-start;justify-content:center;z-index:100;padding:40px 20px;overflow-y:auto}
+#modal.active{display:flex}
+.modal-panel{background:#fff;border-radius:12px;max-width:640px;width:100%;max-height:calc(100vh - 80px);overflow-y:auto;animation:modalIn .2s ease}
+@keyframes modalIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+.modal-head{padding:18px 24px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:#fff;z-index:1}
+.modal-head h3{font-size:16px;letter-spacing:-.3px}
+.modal-close{width:32px;height:32px;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;color:var(--gr);font-size:20px}
+.modal-close:hover{background:#f0f0f0;color:var(--k)}
+.modal-body{padding:24px}
+.modal-foot{padding:16px 24px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:8px;position:sticky;bottom:0;background:#fff}
+
+.field{margin-bottom:16px}
+.field label{display:block;font-size:11px;font-weight:700;letter-spacing:1.5px;color:var(--gr);margin-bottom:6px}
+.field input,.field textarea,.field select{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:6px;transition:.15s}
+.field input:focus,.field textarea:focus,.field select:focus{outline:none;border-color:var(--k)}
+.field textarea{min-height:100px;resize:vertical;font-family:inherit}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.field .req{color:var(--r)}
+
+.upload-area{border:2px dashed var(--line);border-radius:8px;padding:24px;text-align:center;cursor:pointer;transition:.2s;background:#fafafa}
+.upload-area:hover{border-color:var(--k);background:#f5f5f5}
+.upload-area.has-image{padding:0;border-style:solid;background:#000}
+.upload-area img{width:100%;height:200px;object-fit:cover;border-radius:6px;display:block}
+.upload-area .placeholder{color:var(--gr);font-size:13px}
+.upload-area .ico{font-size:32px;opacity:.3;margin-bottom:8px}
+
+.qa-thread{padding:18px;border-radius:8px;margin-bottom:12px;font-size:13px;line-height:1.7}
+.qa-q{background:#fafafa;border-left:3px solid #ccc}
+.qa-a{background:#fff8f7;border-left:3px solid var(--r)}
+.qa-label{font-weight:700;font-size:12px;margin-right:6px}
+.qa-meta{font-size:11px;color:var(--gr);margin-top:8px;font-family:monospace}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--k);color:#fff;padding:12px 24px;border-radius:99px;font-size:13px;font-weight:500;z-index:200;opacity:0;transition:.3s;box-shadow:0 8px 24px rgba(0,0,0,.2)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.error{background:var(--r)}
+.toast.success{background:var(--g)}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  #admin{flex-direction:column}
+  .sidebar{width:100%;height:auto;position:sticky;top:0;flex-direction:row;overflow-x:auto}
+  .sb-head{padding:12px 16px;border-right:1px solid rgba(255,255,255,.1);border-bottom:0;flex-shrink:0}
+  .sb-logo{font-size:18px}
+  .sb-tag{display:none}
+  .sb-nav{display:flex;padding:0;flex:1;overflow-x:auto}
+  .sb-group{display:none}
+  .sb-item{flex-shrink:0;border-left:0;border-bottom:3px solid transparent;padding:14px 16px}
+  .sb-item.active{border-left-color:transparent;border-bottom-color:var(--r);background:transparent}
+  .sb-foot{display:none}
+  .topbar{padding:14px 16px}
+  .topbar .l h1{font-size:18px}
+  #content{padding:16px}
+  .grid-4{grid-template-columns:1fr 1fr;gap:10px}
+  .stat-num{font-size:26px}
+  table{font-size:12px}
+  thead th,tbody td{padding:10px}
+  .field-row{grid-template-columns:1fr}
+  .modal-panel{max-height:calc(100vh - 40px)}
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+<div id="login" class="screen active">
+  <div class="login-box">
+    <div class="login-logo">SKOOL<span class="s">;</span>D<sup style="font-size:11px;opacity:.5">®</sup></div>
+    <div class="login-sub">ADMIN PANEL · v0.1</div>
+    <h2>관리자 로그인</h2>
+    <form id="loginForm">
+      <div class="login-field">
+        <label>EMAIL</label>
+        <input type="email" id="loginEmail" required autocomplete="email" placeholder="admin@skoold.kr">
+      </div>
+      <div class="login-field">
+        <label>PASSWORD</label>
+        <input type="password" id="loginPassword" required autocomplete="current-password">
+      </div>
+      <button type="submit" class="login-btn" id="loginBtn">로그인</button>
+      <div class="login-error" id="loginError"></div>
+    </form>
+    <div class="login-foot">© SKOOL;D · School Branding Lab</div>
+  </div>
+</div>
+
+<!-- ADMIN SCREEN -->
+<div id="admin" class="screen">
+  <aside class="sidebar">
+    <div class="sb-head">
+      <div class="sb-logo">SKOOL<span class="s">;</span>D</div>
+      <div class="sb-tag">ADMIN · v0.1</div>
+    </div>
+    <nav class="sb-nav" id="sbNav">
+      <div class="sb-group">메인</div>
+      <a class="sb-item active" data-page="dashboard">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        대시보드
+      </a>
+      <div class="sb-group">콘텐츠</div>
+      <a class="sb-item" data-page="portfolios">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+        포트폴리오
+      </a>
+      <a class="sb-item" data-page="qna">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        Q&A 게시판
+        <span class="badge" id="qnaBadge" style="display:none">0</span>
+      </a>
+      <a class="sb-item" data-page="inquiries">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>
+        문의함
+        <span class="badge" id="inqBadge" style="display:none">0</span>
+      </a>
+      <a class="sb-item" data-page="hero">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        히어로 슬라이드
+      </a>
+      <div class="sb-group">시스템</div>
+      <a class="sb-item" data-page="settings">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        회사 정보
+      </a>
+    </nav>
+    <div class="sb-foot">
+      <div class="sb-avatar" id="userAvatar">?</div>
+      <div class="sb-user">
+        <div class="name" id="userName">-</div>
+        <div class="role" id="userRole">-</div>
+      </div>
+      <button class="sb-logout" id="logoutBtn" title="로그아웃">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      </button>
+    </div>
+  </aside>
+  
+  <main class="main">
+    <div class="topbar">
+      <div class="l">
+        <div class="crumb" id="crumb">ADMIN / DASHBOARD</div>
+        <h1 id="pageTitle">대시보드</h1>
+      </div>
+      <div class="r">
+        <a href="/" target="_blank" class="btn">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          사이트 보기
+        </a>
+      </div>
+    </div>
+    <div id="content"></div>
+  </main>
+</div>
+
+<!-- MODAL -->
+<div id="modal"></div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ============== CONFIG ==============
+const SUPABASE_URL = 'https://vygcimhmdiucuyxasksu.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_DmxL3WFF9nqjW-pkFKGDoQ_CcwDmbgx';
+const TOKEN_KEY = 'sb-skoold-token';
+const USER_KEY = 'sb-skoold-user';
+
+// ============== STATE ==============
+let token = localStorage.getItem(TOKEN_KEY);
+let user = JSON.parse(localStorage.getItem(USER_KEY) || 'null');
+let currentPage = 'dashboard';
+
+const CAT = {
+  glsori: { ko: '글소리', c: '#C8302B' },
+  gongan: { ko: '공간소리', c: '#0E7C4F' },
+  mudae: { ko: '무대소리', c: '#1E3A8A' },
+  etc: { ko: '기타', c: '#888' },
+};
+
+// ============== UTILS ==============
+function $(s){return document.querySelector(s)}
+function $$(s){return document.querySelectorAll(s)}
+function toast(msg, type){
+  const t = $('#toast');
+  t.className = 'toast show ' + (type||'');
+  t.textContent = msg;
+  setTimeout(()=>t.classList.remove('show'), 2800);
+}
+function esc(s){return String(s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function fmtDate(s){if(!s)return'';const d=new Date(s);return `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`}
+function fmtDateTime(s){if(!s)return'';const d=new Date(s);return `${fmtDate(s)} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`}
+
+// ============== API ==============
+async function api(method, path, body){
+  const headers = { 'apikey': SUPABASE_KEY };
+  if(token) headers['Authorization'] = `Bearer ${token}`;
+  if(body){ headers['Content-Type'] = 'application/json'; headers['Prefer'] = 'return=representation' }
+  
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
+    method, headers,
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  
+  if(res.status === 401){ logout(); throw new Error('인증 만료. 다시 로그인해주세요.') }
+  if(!res.ok){ const t = await res.text(); throw new Error(`${res.status} ${t}`) }
+  if(res.status === 204) return null;
+  return res.json();
+}
+
+async function uploadFile(bucket, path, file){
+  const res = await fetch(`${SUPABASE_URL}/storage/v1/object/${bucket}/${path}`, {
+    method: 'POST',
+    headers: {
+      'apikey': SUPABASE_KEY,
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': file.type,
+      'x-upsert': 'true',
+    },
+    body: file,
+  });
+  if(!res.ok) throw new Error(`업로드 실패: ${await res.text()}`);
+  return `${SUPABASE_URL}/storage/v1/object/public/${bucket}/${path}`;
+}
+
+// ============== AUTH ==============
+async function login(email, password){
+  const res = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
+    method: 'POST',
+    headers: { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password }),
+  });
+  if(!res.ok){
+    const e = await res.json();
+    throw new Error(e.error_description || e.msg || '로그인 실패');
+  }
+  const data = await res.json();
+  token = data.access_token;
+  localStorage.setItem(TOKEN_KEY, token);
+  
+  // Load admin user info
+  const me = await api('GET', `admin_users?id=eq.${data.user.id}&select=*`);
+  if(!me || me.length === 0){
+    logout();
+    throw new Error('관리자 권한이 없습니다');
+  }
+  if(!me[0].is_active){
+    logout();
+    throw new Error('비활성화된 계정입니다');
+  }
+  user = me[0];
+  localStorage.setItem(USER_KEY, JSON.stringify(user));
+  showAdmin();
+}
+
+function logout(){
+  token = null;
+  user = null;
+  localStorage.removeItem(TOKEN_KEY);
+  localStorage.removeItem(USER_KEY);
+  showLogin();
+}
+
+function showLogin(){
+  $('#login').classList.add('active');
+  $('#admin').classList.remove('active');
+}
+
+async function showAdmin(){
+  $('#login').classList.remove('active');
+  $('#admin').classList.add('active');
+  if(user){
+    $('#userAvatar').textContent = user.name[0];
+    $('#userName').textContent = user.name;
+    $('#userRole').textContent = user.role.toUpperCase();
+  }
+  await loadBadges();
+  navigate('dashboard');
+}
+
+async function loadBadges(){
+  try {
+    const [pendingQna, newInq] = await Promise.all([
+      api('GET', `qna_posts?status=eq.pending&select=id`),
+      api('GET', `inquiries?status=eq.new&select=id`),
+    ]);
+    const qB = $('#qnaBadge');
+    const iB = $('#inqBadge');
+    if(pendingQna.length){ qB.textContent = pendingQna.length; qB.style.display = 'inline-flex' }
+    else qB.style.display = 'none';
+    if(newInq.length){ iB.textContent = newInq.length; iB.style.display = 'inline-flex' }
+    else iB.style.display = 'none';
+  } catch(e){ console.error(e) }
+}
+
+// ============== NAVIGATION ==============
+function navigate(page){
+  currentPage = page;
+  $$('.sb-item').forEach(i=>i.classList.toggle('active', i.dataset.page === page));
+  const titles = { dashboard:'대시보드', portfolios:'포트폴리오', qna:'Q&A 게시판', inquiries:'문의함', hero:'히어로 슬라이드', settings:'회사 정보' };
+  $('#pageTitle').textContent = titles[page] || page;
+  $('#crumb').textContent = `ADMIN / ${page.toUpperCase()}`;
+  $('#content').innerHTML = '<div class="empty"><div class="ico">⏳</div><p>로딩 중...</p></div>';
+  ({
+    dashboard: renderDashboard,
+    portfolios: renderPortfolios,
+    qna: renderQna,
+    inquiries: renderInquiries,
+    hero: renderHero,
+    settings: renderSettings,
+  }[page] || renderDashboard)();
+}
+
+// ============== DASHBOARD ==============
+async function renderDashboard(){
+  try {
+    const [pf, qn, iq, hr] = await Promise.all([
+      api('GET', `portfolios?select=id,status`),
+      api('GET', `qna_posts?select=id,status`),
+      api('GET', `inquiries?select=id,status,created_at,school_name,subject&order=created_at.desc&limit=5`),
+      api('GET', `hero_slides?select=id,is_active`),
+    ]);
+    const pfPub = pf.filter(p=>p.status==='published').length;
+    const qnPending = qn.filter(q=>q.status==='pending').length;
+    const iqNew = iq.filter(i=>i.status==='new').length;
+    const hrActive = hr.filter(h=>h.is_active).length;
+    
+    $('#content').innerHTML = `
+      <div class="grid-4">
+        <div class="stat-card" onclick="navigate('portfolios')">
+          <div class="stat-label">PORTFOLIOS</div>
+          <div class="stat-num">${pf.length}</div>
+          <div class="stat-sub">공개 ${pfPub}건 / 전체 ${pf.length}건</div>
+        </div>
+        <div class="stat-card" onclick="navigate('qna')">
+          <div class="stat-label">Q&A · 미답변</div>
+          <div class="stat-num" style="color:${qnPending?'#C8302B':'#1a1a1a'}">${qnPending}</div>
+          <div class="stat-sub">전체 ${qn.length}건</div>
+        </div>
+        <div class="stat-card" onclick="navigate('inquiries')">
+          <div class="stat-label">신규 문의</div>
+          <div class="stat-num" style="color:${iqNew?'#C8302B':'#1a1a1a'}">${iqNew}</div>
+          <div class="stat-sub">처리 대기 중</div>
+        </div>
+        <div class="stat-card" onclick="navigate('hero')">
+          <div class="stat-label">활성 슬라이드</div>
+          <div class="stat-num">${hrActive}<span style="font-size:18px;color:#888"> / ${hr.length}</span></div>
+          <div class="stat-sub">홈 노출 중</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <h3>최근 문의 5건</h3>
+          <button class="btn btn-sm" onclick="navigate('inquiries')">전체 보기 →</button>
+        </div>
+        <table>
+          <thead><tr><th style="width:90px">날짜</th><th>학교 / 제목</th><th style="width:90px">상태</th></tr></thead>
+          <tbody>
+            ${iq.length === 0 ? '<tr><td colspan="3" style="text-align:center;padding:32px;color:#888">아직 문의가 없습니다</td></tr>' :
+              iq.map(i=>`
+                <tr style="cursor:pointer" onclick="navigate('inquiries')">
+                  <td style="font-family:monospace;font-size:11px;color:#888">${fmtDate(i.created_at)}</td>
+                  <td><b>${esc(i.school_name)}</b> · ${esc(i.subject || '제목 없음')}</td>
+                  <td><span class="tag ${i.status}">${i.status}</span></td>
+                </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+    `;
+  } catch(e) { showError(e) }
+}
+
+// ============== PORTFOLIOS ==============
+let portfolioFilter = 'all';
+
+async function renderPortfolios(){
+  try {
+    let q = 'portfolios?select=*&order=updated_at.desc';
+    if(portfolioFilter !== 'all') q += `&brand=eq.${portfolioFilter}`;
+    const items = await api('GET', q);
+    
+    $('#content').innerHTML = `
+      <div class="card">
+        <div class="card-head">
+          <h3>포트폴리오 관리</h3>
+          <button class="btn btn-primary btn-sm" onclick="editPortfolio()">+ 새 프로젝트</button>
+        </div>
+        <div class="filters">
+          ${['all','glsori','gongan','mudae'].map(f=>`
+            <button class="filter-btn ${portfolioFilter===f?'active':''}" onclick="portfolioFilter='${f}';renderPortfolios()">${f==='all'?'전체':CAT[f].ko}</button>
+          `).join('')}
+        </div>
+        ${items.length === 0 ? `
+          <div class="empty">
+            <div class="ico">📋</div>
+            <h4>등록된 프로젝트가 없습니다</h4>
+            <p>"새 프로젝트" 버튼을 눌러 첫 포트폴리오를 등록해보세요.</p>
+          </div>
+        ` : `
+          <table>
+            <thead><tr>
+              <th style="width:60px"></th>
+              <th>제목 / 학교</th>
+              <th style="width:90px">분류</th>
+              <th style="width:60px">연도</th>
+              <th style="width:80px">상태</th>
+              <th style="width:90px">관리</th>
+            </tr></thead>
+            <tbody>
+              ${items.map(p=>`
+                <tr>
+                  <td>${p.cover_image_url ? `<img src="${p.cover_image_url}" style="width:48px;height:32px;object-fit:cover;border-radius:4px">` : `<div style="width:48px;height:32px;background:#eee;border-radius:4px"></div>`}</td>
+                  <td>
+                    <div style="font-weight:600">${esc(p.title)}</div>
+                    <div style="font-size:11px;color:#888">${esc(p.client_name)}${p.sub_category?' · '+esc(p.sub_category):''}</div>
+                  </td>
+                  <td><span class="tag ${p.brand==='glsori'?'r':p.brand==='gongan'?'g':'b'}">${CAT[p.brand]?.ko || p.brand}</span></td>
+                  <td style="font-family:monospace">${p.year}</td>
+                  <td><span class="tag ${p.status}">${p.status==='published'?'공개':p.status==='draft'?'임시':'보관'}</span></td>
+                  <td>
+                    <div class="row-actions">
+                      <button class="icon-btn" onclick="editPortfolio('${p.id}')" title="수정">✎</button>
+                      <button class="icon-btn danger" onclick="deletePortfolio('${p.id}', '${esc(p.title)}')" title="삭제">×</button>
+                    </div>
+                  </td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        `}
+      </div>
+    `;
+  } catch(e) { showError(e) }
+}
+
+async function editPortfolio(id){
+  let item = { brand: 'glsori', year: new Date().getFullYear(), status: 'draft', is_featured: false };
+  if(id){
+    const r = await api('GET', `portfolios?id=eq.${id}&select=*`);
+    item = r[0];
+  }
+  
+  openModal(`
+    <div class="modal-head">
+      <h3>${id ? '프로젝트 수정' : '새 프로젝트'}</h3>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <label>대표 이미지</label>
+        <div class="upload-area ${item.cover_image_url?'has-image':''}" id="uploadArea" onclick="document.getElementById('coverFile').click()">
+          ${item.cover_image_url ? `<img src="${item.cover_image_url}">` : `<div class="placeholder"><div class="ico">📷</div>클릭해서 이미지 업로드<br><span style="font-size:11px">JPG, PNG · 권장 1600×1000px</span></div>`}
+        </div>
+        <input type="file" id="coverFile" accept="image/*" style="display:none">
+        <input type="hidden" id="coverUrl" value="${item.cover_image_url||''}">
+      </div>
+      <div class="field"><label>프로젝트명 <span class="req">*</span></label><input type="text" id="pf_title" value="${esc(item.title||'')}" placeholder="예: ○○초등학교 BI 리뉴얼"></div>
+      <div class="field-row">
+        <div class="field"><label>학교/클라이언트 <span class="req">*</span></label><input type="text" id="pf_client" value="${esc(item.client_name||'')}" placeholder="○○초등학교"></div>
+        <div class="field"><label>연도</label><input type="number" id="pf_year" value="${item.year||new Date().getFullYear()}"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>브랜드 <span class="req">*</span></label>
+          <select id="pf_brand">
+            <option value="glsori" ${item.brand==='glsori'?'selected':''}>글소리 (인쇄·BI)</option>
+            <option value="gongan" ${item.brand==='gongan'?'selected':''}>공간소리 (공간)</option>
+            <option value="mudae" ${item.brand==='mudae'?'selected':''}>무대소리 (행사)</option>
+          </select>
+        </div>
+        <div class="field"><label>세부 분류</label><input type="text" id="pf_sub" value="${esc(item.sub_category||'')}" placeholder="BI·도서관·졸업식"></div>
+      </div>
+      <div class="field"><label>설명</label><textarea id="pf_desc" placeholder="프로젝트 개요와 결과물">${esc(item.description||'')}</textarea></div>
+      <div class="field-row">
+        <div class="field"><label>진행기간 (개월)</label><input type="number" id="pf_period" value="${item.period_months||''}"></div>
+        <div class="field"><label>공개 상태</label>
+          <select id="pf_status">
+            <option value="published" ${item.status==='published'?'selected':''}>공개</option>
+            <option value="draft" ${item.status==='draft'?'selected':''}>임시저장</option>
+            <option value="archived" ${item.status==='archived'?'selected':''}>보관</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;letter-spacing:0">
+          <input type="checkbox" id="pf_featured" ${item.is_featured?'checked':''} style="width:auto;margin:0">
+          <span style="font-size:13px;color:#1a1a1a;font-weight:500">⭐ 홈 화면 추천 프로젝트로 노출</span>
+        </label>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn" onclick="closeModal()">취소</button>
+      <button class="btn btn-primary" onclick="savePortfolio('${id||''}')">저장</button>
+    </div>
+  `);
+  
+  // File upload handler
+  $('#coverFile').addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if(!file) return;
+    const area = $('#uploadArea');
+    area.innerHTML = '<div class="placeholder"><div class="ico">⏳</div>업로드 중...</div>';
+    try {
+      const path = `${Date.now()}_${file.name.replace(/[^a-zA-Z0-9._-]/g,'_')}`;
+      const url = await uploadFile('portfolio-images', path, file);
+      $('#coverUrl').value = url;
+      area.classList.add('has-image');
+      area.innerHTML = `<img src="${url}">`;
+    } catch(err){
+      toast('이미지 업로드 실패: '+err.message, 'error');
+      area.innerHTML = '<div class="placeholder"><div class="ico">📷</div>다시 시도</div>';
+    }
+  });
+}
+
+async function savePortfolio(id){
+  const data = {
+    title: $('#pf_title').value.trim(),
+    client_name: $('#pf_client').value.trim(),
+    brand: $('#pf_brand').value,
+    sub_category: $('#pf_sub').value.trim() || null,
+    year: +$('#pf_year').value,
+    period_months: +$('#pf_period').value || null,
+    description: $('#pf_desc').value.trim() || null,
+    cover_image_url: $('#coverUrl').value || null,
+    is_featured: $('#pf_featured').checked,
+    status: $('#pf_status').value,
+    updated_at: new Date().toISOString(),
+  };
+  if(!data.title || !data.client_name) return toast('필수 항목을 입력해주세요', 'error');
+  
+  try {
+    if(id) await api('PATCH', `portfolios?id=eq.${id}`, data);
+    else { data.created_by = user.id; await api('POST', 'portfolios', data) }
+    closeModal();
+    toast(id?'수정되었습니다':'등록되었습니다', 'success');
+    renderPortfolios();
+  } catch(e){ toast('저장 실패: '+e.message, 'error') }
+}
+
+async function deletePortfolio(id, title){
+  if(!confirm(`"${title}" 프로젝트를 삭제하시겠습니까?`)) return;
+  try {
+    await api('DELETE', `portfolios?id=eq.${id}`);
+    toast('삭제되었습니다', 'success');
+    renderPortfolios();
+  } catch(e){ toast('삭제 실패: '+e.message, 'error') }
+}
+
+// ============== Q&A ==============
+let qnaFilter = 'all';
+
+async function renderQna(){
+  try {
+    let q = 'qna_posts?select=*&order=created_at.desc';
+    if(qnaFilter === 'pending') q += '&status=eq.pending';
+    else if(qnaFilter !== 'all') q += `&brand=eq.${qnaFilter}`;
+    const items = await api('GET', q);
+    
+    $('#content').innerHTML = `
+      <div class="card">
+        <div class="card-head">
+          <h3>Q&A 게시판</h3>
+          <span class="ct">${items.length}건</span>
+        </div>
+        <div class="filters">
+          <button class="filter-btn ${qnaFilter==='all'?'active':''}" onclick="qnaFilter='all';renderQna()">전체</button>
+          <button class="filter-btn ${qnaFilter==='pending'?'active':''}" onclick="qnaFilter='pending';renderQna()">미답변</button>
+          <button class="filter-btn ${qnaFilter==='glsori'?'active':''}" onclick="qnaFilter='glsori';renderQna()">글소리</button>
+          <button class="filter-btn ${qnaFilter==='gongan'?'active':''}" onclick="qnaFilter='gongan';renderQna()">공간소리</button>
+          <button class="filter-btn ${qnaFilter==='mudae'?'active':''}" onclick="qnaFilter='mudae';renderQna()">무대소리</button>
+        </div>
+        ${items.length === 0 ? `<div class="empty"><div class="ico">💬</div><h4>해당하는 문의가 없습니다</h4></div>` : items.map(q=>`
+          <div style="padding:18px 20px;border-bottom:1px solid #f5f5f5">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+              <div>
+                <span class="tag ${q.brand==='glsori'?'r':q.brand==='gongan'?'g':q.brand==='mudae'?'b':'k'}">${CAT[q.brand]?.ko||q.brand}</span>
+                <span style="margin-left:8px;font-weight:600">${esc(q.title)}</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px">
+                <span style="font-size:11px;color:#888;font-family:monospace">${esc(q.author_name)} · ${fmtDate(q.created_at)}</span>
+                ${q.status==='pending' ? `<button class="btn btn-primary btn-sm" onclick="answerQna('${q.id}')">답변 작성</button>` : `<span class="tag answered">답변완료</span>`}
+              </div>
+            </div>
+            <div class="qa-thread qa-q"><span class="qa-label">Q.</span>${esc(q.content)}</div>
+            ${q.answer ? `<div class="qa-thread qa-a"><span class="qa-label" style="color:#C8302B">A.</span>${esc(q.answer)}<div class="qa-meta">답변자: ${esc(q.answered_by||'미상')} · ${fmtDateTime(q.answered_at)}</div></div>` : ''}
+          </div>
+        `).join('')}
+      </div>
+    `;
+  } catch(e){ showError(e) }
+}
+
+async function answerQna(id){
+  const r = await api('GET', `qna_posts?id=eq.${id}&select=*`);
+  const item = r[0];
+  openModal(`
+    <div class="modal-head">
+      <h3>Q&A 답변 작성</h3>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="qa-thread qa-q" style="margin-bottom:20px">
+        <div style="font-weight:600;margin-bottom:8px">${esc(item.title)}</div>
+        <div><span class="qa-label">Q.</span>${esc(item.content)}</div>
+        <div class="qa-meta">${esc(item.author_name)} · ${fmtDate(item.created_at)}</div>
+      </div>
+      <div class="field">
+        <label>답변 내용 <span class="req">*</span></label>
+        <textarea id="qa_answer" style="min-height:160px" placeholder="고객 문의에 대한 답변을 작성해주세요. 구체적 일정·견적 범위·연락 방법을 포함하면 좋습니다."></textarea>
+      </div>
+      <div style="font-size:11px;color:#888">답변자: <b>${esc(user.name)} ${esc(user.role)}</b></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn" onclick="closeModal()">취소</button>
+      <button class="btn btn-primary" onclick="saveQnaAnswer('${id}')">답변 등록</button>
+    </div>
+  `);
+}
+
+async function saveQnaAnswer(id){
+  const answer = $('#qa_answer').value.trim();
+  if(!answer) return toast('답변을 입력해주세요', 'error');
+  try {
+    await api('PATCH', `qna_posts?id=eq.${id}`, {
+      answer,
+      answered_by: user.id,
+      answered_at: new Date().toISOString(),
+      status: 'answered',
+    });
+    closeModal();
+    toast('답변이 등록되었습니다', 'success');
+    loadBadges();
+    renderQna();
+  } catch(e){ toast('등록 실패: '+e.message, 'error') }
+}
+
+// ============== INQUIRIES ==============
+let inqFilter = 'all';
+
+async function renderInquiries(){
+  try {
+    let q = 'inquiries?select=*&order=created_at.desc';
+    if(inqFilter !== 'all') q += `&status=eq.${inqFilter}`;
+    const items = await api('GET', q);
+    
+    $('#content').innerHTML = `
+      <div class="card">
+        <div class="card-head">
+          <h3>견적·상담 문의</h3>
+          <span class="ct">${items.length}건</span>
+        </div>
+        <div class="filters">
+          ${['all','new','contacted','quoted','won','lost'].map(f=>`
+            <button class="filter-btn ${inqFilter===f?'active':''}" onclick="inqFilter='${f}';renderInquiries()">${({all:'전체',new:'신규',contacted:'연락중',quoted:'견적발송',won:'수주',lost:'실주'}[f])}</button>
+          `).join('')}
+        </div>
+        ${items.length === 0 ? `<div class="empty"><div class="ico">📬</div><h4>해당하는 문의가 없습니다</h4><p>홈페이지 Contact 폼이 제출되면 여기 표시됩니다.</p></div>` : `
+          <table>
+            <thead><tr>
+              <th style="width:90px">접수일</th>
+              <th>학교 / 담당자</th>
+              <th>제목</th>
+              <th style="width:120px">연락처</th>
+              <th style="width:90px">상태</th>
+              <th style="width:60px"></th>
+            </tr></thead>
+            <tbody>
+              ${items.map(i=>`
+                <tr style="cursor:pointer" onclick="viewInquiry('${i.id}')">
+                  <td style="font-family:monospace;font-size:11px;color:#888">${fmtDate(i.created_at)}</td>
+                  <td><b>${esc(i.school_name)}</b><div style="font-size:11px;color:#888">${esc(i.contact_person)}</div></td>
+                  <td style="font-size:12px">${esc(i.subject || '(제목 없음)')}</td>
+                  <td style="font-family:monospace;font-size:11px">${esc(i.phone)}</td>
+                  <td><span class="tag ${i.status}">${({new:'신규',contacted:'연락중',quoted:'견적발송',won:'수주',lost:'실주',closed:'종료'}[i.status])}</span></td>
+                  <td>→</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        `}
+      </div>
+    `;
+  } catch(e){ showError(e) }
+}
+
+async function viewInquiry(id){
+  const r = await api('GET', `inquiries?id=eq.${id}&select=*`);
+  const i = r[0];
+  openModal(`
+    <div class="modal-head">
+      <h3>문의 상세</h3>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div style="background:#fafafa;border-radius:8px;padding:18px;margin-bottom:20px">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:13px">
+          <div><div style="font-size:10px;color:#888;letter-spacing:1px;margin-bottom:2px">학교명</div><b>${esc(i.school_name)}</b></div>
+          <div><div style="font-size:10px;color:#888;letter-spacing:1px;margin-bottom:2px">담당자</div><b>${esc(i.contact_person)}</b></div>
+          <div><div style="font-size:10px;color:#888;letter-spacing:1px;margin-bottom:2px">전화</div><a href="tel:${i.phone}">${esc(i.phone)}</a></div>
+          <div><div style="font-size:10px;color:#888;letter-spacing:1px;margin-bottom:2px">이메일</div><a href="mailto:${i.email}">${esc(i.email)}</a></div>
+        </div>
+      </div>
+      <div class="field"><label>제목</label><div style="padding:10px 12px;background:#fafafa;border-radius:6px">${esc(i.subject || '(없음)')}</div></div>
+      <div class="field"><label>문의 내용</label><div style="padding:14px;background:#fafafa;border-radius:6px;white-space:pre-wrap;line-height:1.7">${esc(i.content)}</div></div>
+      ${i.reference_url ? `<div class="field"><label>참고 URL</label><a href="${esc(i.reference_url)}" target="_blank" style="color:#1E3A8A">${esc(i.reference_url)}</a></div>` : ''}
+      <hr style="border:none;border-top:1px solid #eee;margin:20px 0">
+      <div class="field"><label>처리 상태</label>
+        <select id="inq_status">
+          <option value="new" ${i.status==='new'?'selected':''}>신규</option>
+          <option value="contacted" ${i.status==='contacted'?'selected':''}>연락중</option>
+          <option value="quoted" ${i.status==='quoted'?'selected':''}>견적발송</option>
+          <option value="won" ${i.status==='won'?'selected':''}>수주</option>
+          <option value="lost" ${i.status==='lost'?'selected':''}>실주</option>
+          <option value="closed" ${i.status==='closed'?'selected':''}>종료</option>
+        </select>
+      </div>
+      <div class="field"><label>내부 메모</label><textarea id="inq_notes" placeholder="처리 내용·견적·통화 내용 등 (고객에게 보이지 않음)">${esc(i.notes||'')}</textarea></div>
+      <div style="font-size:11px;color:#888;font-family:monospace">접수: ${fmtDateTime(i.created_at)}</div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn" onclick="closeModal()">닫기</button>
+      <button class="btn btn-primary" onclick="saveInquiry('${id}')">저장</button>
+    </div>
+  `);
+}
+
+async function saveInquiry(id){
+  try {
+    await api('PATCH', `inquiries?id=eq.${id}`, {
+      status: $('#inq_status').value,
+      notes: $('#inq_notes').value.trim() || null,
+      updated_at: new Date().toISOString(),
+      assigned_to: user.id,
+    });
+    closeModal();
+    toast('업데이트되었습니다', 'success');
+    loadBadges();
+    renderInquiries();
+  } catch(e){ toast('실패: '+e.message, 'error') }
+}
+
+// ============== HERO ==============
+async function renderHero(){
+  try {
+    const items = await api('GET', 'hero_slides?select=*&order=display_order');
+    $('#content').innerHTML = `
+      <div class="card">
+        <div class="card-head">
+          <h3>히어로 슬라이드</h3>
+          <span class="ct">활성 ${items.filter(i=>i.is_active).length} / ${items.length}</span>
+        </div>
+        <div style="padding:14px 20px;background:#fafafa;font-size:12px;color:#666;border-bottom:1px solid var(--line)">홈 상단에 5초마다 자동 전환되는 슬라이드입니다. 비활성화하면 노출되지 않습니다.</div>
+        ${items.map((h,idx)=>`
+          <div style="display:flex;gap:16px;padding:16px 20px;border-bottom:1px solid #f5f5f5;align-items:center">
+            <div style="width:80px;height:50px;background:linear-gradient(135deg,#3d4f6b,#1a2638);border-radius:6px;display:flex;align-items:center;justify-content:center;color:#fff;font-family:monospace;font-size:11px;flex-shrink:0">SLIDE ${String(h.display_order).padStart(2,'0')}</div>
+            <div style="flex:1;min-width:0">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+                <span style="background:#eee;padding:2px 8px;border-radius:99px;font-size:10px;font-weight:700">${esc(h.title)}</span>
+                <span style="font-size:11px;color:#888;font-family:monospace">→ /${esc(h.link_page)}</span>
+              </div>
+              <div style="font-weight:600;font-size:14px">${esc(h.main_copy)}</div>
+              <div style="font-size:12px;color:#888;margin-top:2px">${esc(h.sub_copy||'')}</div>
+            </div>
+            <button class="btn ${h.is_active?'':'btn-k'} btn-sm" onclick="toggleHero(${h.id}, ${!h.is_active})" style="${h.is_active?'background:#dcfce7;color:#166534;border-color:#bbf7d0':''}">
+              ${h.is_active?'● 활성':'○ 비활성'}
+            </button>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  } catch(e){ showError(e) }
+}
+
+async function toggleHero(id, newState){
+  try {
+    await api('PATCH', `hero_slides?id=eq.${id}`, { is_active: newState, updated_at: new Date().toISOString() });
+    toast(newState?'활성화됨':'비활성화됨', 'success');
+    renderHero();
+  } catch(e){ toast('실패: '+e.message, 'error') }
+}
+
+// ============== SETTINGS ==============
+async function renderSettings(){
+  try {
+    const r = await api('GET', 'site_settings?select=*&limit=1');
+    const s = r[0];
+    $('#content').innerHTML = `
+      <div class="card">
+        <div class="card-head"><h3>회사 기본 정보</h3><span class="ct">홈페이지 푸터·CTA에 자동 반영</span></div>
+        <div style="padding:24px">
+          <div class="field-row">
+            <div class="field"><label>회사명</label><input type="text" id="s_company" value="${esc(s.company_name||'')}"></div>
+            <div class="field"><label>대표자</label><input type="text" id="s_ceo" value="${esc(s.ceo||'')}"></div>
+          </div>
+          <div class="field-row">
+            <div class="field"><label>사업자번호</label><input type="text" id="s_bn" value="${esc(s.business_number||'')}" placeholder="000-00-00000"></div>
+            <div class="field"><label>설립연도</label><input type="number" id="s_founded" value="${s.founded_year||2008}"></div>
+          </div>
+          <div class="field"><label>본점 주소</label><input type="text" id="s_main" value="${esc(s.main_address||'')}"></div>
+          <div class="field"><label>지점 주소</label><input type="text" id="s_branch" value="${esc(s.branch_address||'')}"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h3>연락처</h3></div>
+        <div style="padding:24px">
+          <div class="field-row">
+            <div class="field"><label>이메일</label><input type="email" id="s_email" value="${esc(s.email||'')}"></div>
+            <div class="field"><label>대표 전화</label><input type="text" id="s_tel" value="${esc(s.tel||'')}"></div>
+          </div>
+          <div class="field-row">
+            <div class="field"><label>모바일</label><input type="text" id="s_mobile" value="${esc(s.mobile||'')}"></div>
+            <div class="field"><label>카카오톡 채널 URL</label><input type="text" id="s_kakao" value="${esc(s.kakao_channel_url||'')}"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h3>대표 통계</h3><span class="ct">홈·About에 표시되는 숫자</span></div>
+        <div style="padding:24px">
+          <div class="field-row">
+            <div class="field"><label>누적 프로젝트</label><input type="number" id="s_proj" value="${s.stat_projects}"></div>
+            <div class="field"><label>교육청</label><input type="number" id="s_off" value="${s.stat_offices}"></div>
+          </div>
+          <div class="field-row">
+            <div class="field"><label>초등학교</label><input type="number" id="s_elem" value="${s.stat_elementary}"></div>
+            <div class="field"><label>중·고등학교</label><input type="number" id="s_mh" value="${s.stat_middle_high}"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h3>브랜드 슬로건</h3></div>
+        <div style="padding:24px">
+          <div class="field"><label>한글 슬로건</label><input type="text" id="s_sko" value="${esc(s.slogan_ko||'')}"></div>
+          <div class="field"><label>영문 슬로건</label><input type="text" id="s_sen" value="${esc(s.slogan_en||'')}"></div>
+        </div>
+      </div>
+
+      <div style="text-align:right;margin-top:20px">
+        <button class="btn btn-primary" onclick="saveSettings()" style="padding:12px 32px">설정 저장</button>
+      </div>
+    `;
+  } catch(e){ showError(e) }
+}
+
+async function saveSettings(){
+  try {
+    await api('PATCH', 'site_settings?id=eq.1', {
+      company_name: $('#s_company').value,
+      ceo: $('#s_ceo').value,
+      business_number: $('#s_bn').value,
+      founded_year: +$('#s_founded').value || 2008,
+      main_address: $('#s_main').value,
+      branch_address: $('#s_branch').value,
+      email: $('#s_email').value,
+      tel: $('#s_tel').value,
+      mobile: $('#s_mobile').value,
+      kakao_channel_url: $('#s_kakao').value,
+      stat_projects: +$('#s_proj').value,
+      stat_offices: +$('#s_off').value,
+      stat_elementary: +$('#s_elem').value,
+      stat_middle_high: +$('#s_mh').value,
+      slogan_ko: $('#s_sko').value,
+      slogan_en: $('#s_sen').value,
+      updated_at: new Date().toISOString(),
+    });
+    toast('회사 정보가 저장되었습니다', 'success');
+  } catch(e){ toast('저장 실패: '+e.message, 'error') }
+}
+
+// ============== MODAL & HELPERS ==============
+function openModal(html){
+  const m = $('#modal');
+  m.innerHTML = `<div class="modal-panel">${html}</div>`;
+  m.classList.add('active');
+  m.onclick = (e)=>{ if(e.target===m) closeModal() };
+}
+function closeModal(){
+  $('#modal').classList.remove('active');
+  $('#modal').innerHTML = '';
+}
+function showError(e){
+  $('#content').innerHTML = `<div class="empty"><div class="ico">⚠️</div><h4>데이터를 불러올 수 없습니다</h4><p>${esc(e.message)}</p></div>`;
+}
+
+// ============== EVENT BINDINGS ==============
+$('#loginForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const btn = $('#loginBtn');
+  const err = $('#loginError');
+  btn.disabled = true; btn.textContent = '로그인 중...';
+  err.textContent = '';
+  try {
+    await login($('#loginEmail').value, $('#loginPassword').value);
+  } catch(e){
+    err.textContent = e.message;
+    btn.disabled = false; btn.textContent = '로그인';
+  }
+});
+
+$('#logoutBtn').addEventListener('click', ()=>{
+  if(confirm('로그아웃 하시겠습니까?')) logout();
+});
+
+$$('.sb-item').forEach(el => {
+  el.addEventListener('click', (e) => {
+    e.preventDefault();
+    navigate(el.dataset.page);
+  });
+});
+
+// ============== INIT ==============
+if(token && user){
+  showAdmin();
+} else {
+  showLogin();
+}
+</script>
+</body>
+</html>
