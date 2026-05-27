@@ -141,12 +141,17 @@ tbody tr:last-child td{border-bottom:0}
 .field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .field .req{color:var(--r)}
 
-.upload-area{border:2px dashed var(--line);border-radius:8px;padding:24px;text-align:center;cursor:pointer;transition:.2s;background:#fafafa}
+.upload-area{border:2px dashed var(--line);border-radius:8px;padding:24px;text-align:center;cursor:pointer;transition:.2s;background:#fafafa;position:relative}
 .upload-area:hover{border-color:var(--k);background:#f5f5f5}
+.upload-area.dragover{border-color:var(--k);background:#fff5f5;border-style:solid;transform:scale(1.01)}
 .upload-area.has-image{padding:0;border-style:solid;background:#000}
 .upload-area img{width:100%;height:200px;object-fit:cover;border-radius:6px;display:block}
-.upload-area .placeholder{color:var(--gr);font-size:13px}
+.upload-area .placeholder{color:var(--gr);font-size:13px;pointer-events:none}
 .upload-area .ico{font-size:32px;opacity:.3;margin-bottom:8px}
+.upload-area .drag-hint{display:block;font-size:11px;margin-top:6px;color:#aaa}
+.upload-area .remove-img{position:absolute;top:8px;right:8px;width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,.7);color:#fff;display:none;align-items:center;justify-content:center;font-size:18px;z-index:2;border:none;cursor:pointer}
+.upload-area.has-image .remove-img{display:inline-flex}
+.upload-area.has-image .remove-img:hover{background:rgba(200,48,43,.95)}
 
 .qa-thread{padding:18px;border-radius:8px;margin-bottom:12px;font-size:13px;line-height:1.7}
 .qa-q{background:#fafafa;border-left:3px solid #ccc}
@@ -286,12 +291,15 @@ tbody tr:last-child td{border-bottom:0}
 const SUPABASE_URL = 'https://vygcimhmdiucuyxasksu.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_DmxL3WFF9nqjW-pkFKGDoQ_CcwDmbgx';
 const TOKEN_KEY = 'sb-skoold-token';
+const REFRESH_KEY = 'sb-skoold-refresh';
 const USER_KEY = 'sb-skoold-user';
 
 // ============== STATE ==============
 let token = localStorage.getItem(TOKEN_KEY);
+let refreshToken = localStorage.getItem(REFRESH_KEY);
 let user = JSON.parse(localStorage.getItem(USER_KEY) || 'null');
 let currentPage = 'dashboard';
+let refreshPromise = null; // dedupe concurrent refresh calls
 
 const CAT = {
   glsori: { ko: '글소리', c: '#C8302B' },
@@ -314,7 +322,37 @@ function fmtDate(s){if(!s)return'';const d=new Date(s);return `${d.getFullYear()
 function fmtDateTime(s){if(!s)return'';const d=new Date(s);return `${fmtDate(s)} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`}
 
 // ============== API ==============
-async function api(method, path, body){
+async function refreshSession(){
+  if(!refreshToken) throw new Error('no_refresh_token');
+  // Reuse in-flight refresh to prevent stampede
+  if(refreshPromise) return refreshPromise;
+  refreshPromise = (async () => {
+    try {
+      const res = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=refresh_token`, {
+        method: 'POST',
+        headers: { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ refresh_token: refreshToken }),
+      });
+      if(!res.ok){
+        const t = await res.text();
+        console.error('[refresh] failed', res.status, t);
+        throw new Error('refresh_failed');
+      }
+      const data = await res.json();
+      token = data.access_token;
+      refreshToken = data.refresh_token || refreshToken;
+      localStorage.setItem(TOKEN_KEY, token);
+      localStorage.setItem(REFRESH_KEY, refreshToken);
+      console.log('[auth] session refreshed');
+      return token;
+    } finally {
+      refreshPromise = null;
+    }
+  })();
+  return refreshPromise;
+}
+
+async function api(method, path, body, _retried){
   const headers = { 'apikey': SUPABASE_KEY };
   if(token) headers['Authorization'] = `Bearer ${token}`;
   if(body){ headers['Content-Type'] = 'application/json'; headers['Prefer'] = 'return=representation' }
@@ -324,13 +362,17 @@ async function api(method, path, body){
     body: body ? JSON.stringify(body) : undefined,
   });
   
+  if(res.status === 401 && !_retried && refreshToken){
+    try { await refreshSession(); return api(method, path, body, true); }
+    catch(_){ logout(); throw new Error('세션 만료 — 다시 로그인해주세요'); }
+  }
   if(res.status === 401){ logout(); throw new Error('인증 만료. 다시 로그인해주세요.') }
   if(!res.ok){ const t = await res.text(); throw new Error(`${res.status} ${t}`) }
   if(res.status === 204) return null;
   return res.json();
 }
 
-async function uploadFile(bucket, path, file){
+async function uploadFile(bucket, path, file, _retried){
   const res = await fetch(`${SUPABASE_URL}/storage/v1/object/${bucket}/${path}`, {
     method: 'POST',
     headers: {
@@ -341,7 +383,20 @@ async function uploadFile(bucket, path, file){
     },
     body: file,
   });
-  if(!res.ok) throw new Error(`업로드 실패: ${await res.text()}`);
+  if(res.status === 401 && !_retried && refreshToken){
+    try { await refreshSession(); return uploadFile(bucket, path, file, true); }
+    catch(_){ logout(); throw new Error('세션 만료 — 다시 로그인해주세요'); }
+  }
+  if(!res.ok){
+    const text = await res.text();
+    let msg = text;
+    try { const j = JSON.parse(text); msg = j.message || j.error || text; } catch(_){}
+    console.error('[storage upload]', res.status, msg);
+    if(res.status === 404)       msg = `버킷 '${bucket}'이 없습니다. Supabase → Storage에서 만드세요.`;
+    else if(res.status === 403)  msg = `권한 없음 — Storage 정책 확인 필요 (${msg})`;
+    else if(res.status === 413)  msg = '파일 용량 초과';
+    throw new Error(`[${res.status}] ${msg}`);
+  }
   return `${SUPABASE_URL}/storage/v1/object/public/${bucket}/${path}`;
 }
 
@@ -358,7 +413,9 @@ async function login(email, password){
   }
   const data = await res.json();
   token = data.access_token;
+  refreshToken = data.refresh_token;
   localStorage.setItem(TOKEN_KEY, token);
+  localStorage.setItem(REFRESH_KEY, refreshToken);
   
   // Load admin user info
   const me = await api('GET', `admin_users?id=eq.${data.user.id}&select=*`);
@@ -377,8 +434,10 @@ async function login(email, password){
 
 function logout(){
   token = null;
+  refreshToken = null;
   user = null;
   localStorage.removeItem(TOKEN_KEY);
+  localStorage.removeItem(REFRESH_KEY);
   localStorage.removeItem(USER_KEY);
   showLogin();
 }
@@ -571,10 +630,10 @@ async function editPortfolio(id){
     <div class="modal-body">
       <div class="field">
         <label>대표 이미지</label>
-        <div class="upload-area ${item.cover_image_url?'has-image':''}" id="uploadArea" onclick="document.getElementById('coverFile').click()">
-          ${item.cover_image_url ? `<img src="${item.cover_image_url}">` : `<div class="placeholder"><div class="ico">📷</div>클릭해서 이미지 업로드<br><span style="font-size:11px">JPG, PNG · 권장 1600×1000px</span></div>`}
+        <div class="upload-area ${item.cover_image_url?'has-image':''}" id="uploadArea">
+          ${item.cover_image_url ? `<img src="${item.cover_image_url}"><button type="button" class="remove-img" id="removeImg" title="이미지 삭제">×</button>` : `<div class="placeholder"><div class="ico">📷</div>클릭하거나 이미지를 끌어다 놓으세요<br><span class="drag-hint">JPG · PNG · WebP · 최대 10MB · 권장 1600×1000px</span></div>`}
         </div>
-        <input type="file" id="coverFile" accept="image/*" style="display:none">
+        <input type="file" id="coverFile" accept="image/jpeg,image/png,image/webp" style="display:none">
         <input type="hidden" id="coverUrl" value="${item.cover_image_url||''}">
       </div>
       <div class="field"><label>프로젝트명 <span class="req">*</span></label><input type="text" id="pf_title" value="${esc(item.title||'')}" placeholder="예: ○○초등학교 BI 리뉴얼"></div>
@@ -616,23 +675,98 @@ async function editPortfolio(id){
     </div>
   `);
   
-  // File upload handler
-  $('#coverFile').addEventListener('change', async (e) => {
-    const file = e.target.files[0];
-    if(!file) return;
+  // File upload — click + drag-and-drop + remove + validation
+  (function setupUploadArea(){
     const area = $('#uploadArea');
-    area.innerHTML = '<div class="placeholder"><div class="ico">⏳</div>업로드 중...</div>';
-    try {
-      const path = `${Date.now()}_${file.name.replace(/[^a-zA-Z0-9._-]/g,'_')}`;
-      const url = await uploadFile('portfolio-images', path, file);
-      $('#coverUrl').value = url;
-      area.classList.add('has-image');
-      area.innerHTML = `<img src="${url}">`;
-    } catch(err){
-      toast('이미지 업로드 실패: '+err.message, 'error');
-      area.innerHTML = '<div class="placeholder"><div class="ico">📷</div>다시 시도</div>';
+    const input = $('#coverFile');
+    if(!area || !input) return;
+
+    const MAX_SIZE = 10 * 1024 * 1024;
+    const ALLOWED = ['image/jpeg','image/png','image/webp'];
+
+    const placeholderHTML = '<div class="placeholder"><div class="ico">📷</div>클릭하거나 이미지를 끌어다 놓으세요<br><span class="drag-hint">JPG · PNG · WebP · 최대 10MB · 권장 1600×1000px</span></div>';
+
+    async function handleFile(file){
+      if(!file) return;
+      if(!ALLOWED.includes(file.type)){
+        toast('JPG, PNG, WebP 형식만 업로드할 수 있습니다', 'error');
+        return;
+      }
+      if(file.size > MAX_SIZE){
+        toast(`파일 용량이 너무 큽니다 (${(file.size/1024/1024).toFixed(1)}MB / 최대 10MB)`, 'error');
+        return;
+      }
+
+      area.classList.remove('has-image','dragover');
+      area.innerHTML = `<div class="placeholder"><div class="ico">⏳</div>업로드 중...<br><span class="drag-hint">${esc(file.name)} (${(file.size/1024).toFixed(0)}KB)</span></div>`;
+
+      try {
+        const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
+        const base = file.name.replace(/\.[^.]+$/,'').replace(/[^a-zA-Z0-9가-힣_-]/g,'_').slice(0,40) || 'image';
+        const path = `${Date.now()}_${base}.${ext}`;
+        const url = await uploadFile('portfolio-images', path, file);
+        $('#coverUrl').value = url;
+        area.classList.add('has-image');
+        area.innerHTML = `<img src="${url}"><button type="button" class="remove-img" id="removeImg" title="이미지 삭제">×</button>`;
+        bindRemove();
+        toast('업로드 완료', 'success');
+      } catch(err){
+        console.error('[upload]', err);
+        area.classList.remove('has-image');
+        area.innerHTML = `<div class="placeholder"><div class="ico">⚠️</div>업로드 실패 — 클릭해서 다시 시도<br><span class="drag-hint" style="color:#c53030">${esc(err.message)}</span></div>`;
+        toast('이미지 업로드 실패: '+err.message, 'error');
+      } finally {
+        input.value = '';
+      }
     }
-  });
+
+    function bindRemove(){
+      const btn = $('#removeImg');
+      if(!btn) return;
+      btn.onclick = (e)=>{
+        e.stopPropagation();
+        $('#coverUrl').value = '';
+        area.classList.remove('has-image');
+        area.innerHTML = placeholderHTML;
+        input.value = '';
+      };
+    }
+    bindRemove();
+
+    // Click → file picker (ignore clicks on remove button)
+    area.addEventListener('click', (e)=>{
+      if(e.target.closest('.remove-img')) return;
+      input.click();
+    });
+
+    // File picker change
+    input.addEventListener('change', (e)=> handleFile(e.target.files[0]));
+
+    // Drag and drop
+    ['dragenter','dragover'].forEach(ev=>{
+      area.addEventListener(ev, (e)=>{
+        e.preventDefault(); e.stopPropagation();
+        area.classList.add('dragover');
+      });
+    });
+    ['dragleave','dragend'].forEach(ev=>{
+      area.addEventListener(ev, (e)=>{
+        e.preventDefault(); e.stopPropagation();
+        area.classList.remove('dragover');
+      });
+    });
+    area.addEventListener('drop', (e)=>{
+      e.preventDefault(); e.stopPropagation();
+      area.classList.remove('dragover');
+      const file = e.dataTransfer.files[0];
+      handleFile(file);
+    });
+
+    // Prevent browser from opening files dropped outside the upload area
+    const stopOutside = (e)=>{ if(!e.target.closest('#uploadArea')) e.preventDefault(); };
+    window.addEventListener('dragover', stopOutside);
+    window.addEventListener('drop', stopOutside);
+  })();
 }
 
 async function savePortfolio(id){
