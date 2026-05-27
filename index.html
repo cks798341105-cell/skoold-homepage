@@ -2,1229 +2,756 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>스쿨디 관리자 — SKOOL;D Admin</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>학교의 가치를 올려드립니다 — (주)스쿨디 SKOOL;D</title>
+<meta name="description" content="(주)스쿨디는 학교 브랜딩의 모든 KEY를 만드는 학교 브랜딩 토탈 솔루션 기업입니다.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700;800&family=Roboto+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
+
 <style>
-:root{--r:#C8302B;--g:#0E7C4F;--b:#1E3A8A;--k:#1a1a1a;--gr:#888;--line:#e5e5e5;--bg:#f7f7f5}
+:root{
+  --r:#C8302B; --g:#0E7C4F; --b:#1E3A8A;
+  --k:#1a1a1a; --k2:#444; --gr:#888;
+  --bg:#f4f1e8; --bg2:#ede9dc; --bg3:#fbfaf6;
+  --line:#e5e2d8;
+}
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Pretendard Variable','Pretendard',-apple-system,sans-serif;background:var(--bg);color:var(--k);-webkit-font-smoothing:antialiased;font-size:14px}
-button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit;font-size:inherit}
-input,textarea,select{font-family:inherit;font-size:14px}
-a{color:inherit;text-decoration:none}
+html,body{overflow-x:hidden}
+body{font-family:'Pretendard Variable','Pretendard','Apple SD Gothic Neo',-apple-system,BlinkMacSystemFont,sans-serif;color:var(--k);background:#fff;line-height:1.6;font-weight:400;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none;cursor:pointer}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+img{display:block;max-width:100%}
+ul{list-style:none}
+.container{max-width:1280px;margin:0 auto;padding:0 32px}
+.container-narrow{max-width:900px;margin:0 auto;padding:0 32px;text-align:center}
 
-.screen{display:none}
-.screen.active{display:block}
+/* LIVE STATUS INDICATOR */
+.live-status{position:fixed;top:120px;left:20px;z-index:99;background:#fff;padding:8px 14px;border-radius:99px;font-size:11px;font-family:'Roboto Mono',monospace;letter-spacing:1px;box-shadow:0 4px 12px rgba(0,0,0,.08);display:flex;align-items:center;gap:8px;border:1px solid var(--line);opacity:0;transition:opacity .3s;pointer-events:none}
+.live-status.show{opacity:1}
+.live-status .dot{width:6px;height:6px;border-radius:50%;background:#888}
+.live-status.connected .dot{background:var(--g);animation:pulse-live 2s infinite}
+.live-status.error .dot{background:var(--r)}
+@keyframes pulse-live{0%,100%{opacity:1}50%{opacity:.4}}
 
-/* LOGIN */
-#login{min-height:100vh;display:none;align-items:center;justify-content:center;padding:24px;background:linear-gradient(135deg,#1a1a1a 0%,#2a2a2a 100%)}
-#login.active{display:flex}
-.login-box{background:#fff;padding:48px 40px;border-radius:16px;width:100%;max-width:420px;box-shadow:0 20px 60px rgba(0,0,0,.3)}
-.login-logo{font-family:'Roboto','Helvetica',sans-serif;font-size:32px;font-weight:800;letter-spacing:-1.5px;margin-bottom:6px}
-.login-logo .s{color:var(--r);font-style:italic}
-.login-sub{font-size:11px;letter-spacing:3px;color:var(--gr);margin-bottom:36px;font-family:monospace}
-.login-box h2{font-size:20px;margin-bottom:24px;letter-spacing:-.5px}
-.login-field{margin-bottom:16px}
-.login-field label{display:block;font-size:11px;font-weight:700;letter-spacing:2px;color:var(--gr);margin-bottom:8px}
-.login-field input{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:6px;transition:.2s}
-.login-field input:focus{outline:none;border-color:var(--k)}
-.login-btn{width:100%;padding:14px;background:var(--k);color:#fff;font-weight:700;letter-spacing:2px;border-radius:6px;margin-top:8px;transition:.2s}
-.login-btn:hover{background:var(--r)}
-.login-btn:disabled{opacity:.5;cursor:wait}
-.login-error{font-size:12px;color:var(--r);margin-top:12px;text-align:center;min-height:18px}
-.login-foot{margin-top:24px;padding-top:20px;border-top:1px solid var(--line);font-size:11px;color:var(--gr);text-align:center;letter-spacing:1px;font-family:monospace}
+/* HEADER */
+.header{position:fixed;top:0;left:0;right:0;z-index:100;background:#fff;border-bottom:1px solid var(--line)}
+.header-top{background:var(--k);color:#fff;font-size:11px;letter-spacing:.5px}
+.header-top-inner{max-width:1280px;margin:0 auto;padding:8px 32px;display:flex;justify-content:space-between;align-items:center}
+.header-top .l{opacity:.85;letter-spacing:2px}
+.header-top .r{display:flex;gap:20px}
+.header-top .r span{opacity:.55;margin-right:6px}
+.header-top .r b{font-weight:600}
+.header-main{max-width:1280px;margin:0 auto;padding:18px 32px;display:flex;align-items:center;justify-content:space-between;gap:24px}
+.logo{display:flex;flex-direction:column;line-height:1}
+.logo .name{font-family:'Roboto',sans-serif;font-size:30px;font-weight:800;letter-spacing:-1px;color:var(--k)}
+.logo .name .semi{color:var(--r);font-style:italic}
+.logo .name sup{font-size:10px;font-weight:400;vertical-align:super;opacity:.5}
+.logo .sub{font-size:10px;letter-spacing:2px;color:var(--gr);margin-top:6px;font-family:'Roboto Mono',monospace}
+.ver-badge{font-size:10px;background:var(--g);color:#fff;padding:4px 10px;border-radius:99px;letter-spacing:1.5px;font-family:'Roboto Mono',monospace;margin-left:auto;margin-right:24px}
+.nav-menu{display:flex;gap:32px;align-items:center}
+.nav-menu a{font-size:13px;font-weight:600;letter-spacing:1px;color:var(--k2);padding:8px 0;position:relative;display:flex;align-items:center;gap:6px;transition:color .2s}
+.nav-menu a:hover,.nav-menu a.active{color:var(--k)}
+.nav-menu a.active::after{content:'';position:absolute;left:0;right:0;bottom:-2px;height:2px;background:var(--r)}
+.nm-num{font-family:'Roboto Mono',monospace;font-size:9px;color:var(--gr);font-weight:400}
 
-/* ADMIN LAYOUT */
-#admin{display:none;min-height:100vh}
-#admin.active{display:flex}
-.sidebar{width:240px;background:var(--k);color:#fff;flex-shrink:0;display:flex;flex-direction:column;position:sticky;top:0;height:100vh}
-.sb-head{padding:24px 22px;border-bottom:1px solid rgba(255,255,255,.1)}
-.sb-logo{font-family:'Roboto','Helvetica',sans-serif;font-size:22px;font-weight:800;letter-spacing:-1px}
-.sb-logo .s{color:var(--r);font-style:italic}
-.sb-tag{font-size:9px;letter-spacing:3px;color:#888;margin-top:4px;font-family:monospace}
-.sb-nav{flex:1;padding:16px 0;overflow-y:auto}
-.sb-group{font-size:10px;letter-spacing:2px;color:#555;padding:14px 22px 8px;font-family:monospace}
-.sb-item{display:flex;align-items:center;gap:12px;padding:11px 22px;color:#aaa;border-left:3px solid transparent;cursor:pointer;transition:.2s;font-size:13px}
-.sb-item:hover{color:#fff;background:rgba(255,255,255,.05)}
-.sb-item.active{color:#fff;background:rgba(200,48,43,.15);border-left-color:var(--r)}
-.sb-item .badge{margin-left:auto;background:var(--r);color:#fff;font-size:10px;padding:2px 7px;border-radius:99px;font-weight:700}
-.sb-foot{padding:14px 22px;border-top:1px solid rgba(255,255,255,.1);display:flex;align-items:center;gap:10px}
-.sb-avatar{width:32px;height:32px;border-radius:50%;background:var(--r);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0}
-.sb-user{flex:1;min-width:0}
-.sb-user .name{font-size:13px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.sb-user .role{font-size:10px;color:#888;letter-spacing:1px;font-family:monospace}
-.sb-logout{padding:6px;color:#888;border-radius:4px}
-.sb-logout:hover{color:#fff;background:rgba(255,255,255,.1)}
+.hamburger{position:fixed;top:24px;right:32px;z-index:200;width:42px;height:42px;background:var(--k);display:flex;flex-direction:column;justify-content:center;align-items:center;gap:5px;border-radius:50%}
+.hamburger span{display:block;width:18px;height:1.5px;background:#fff;transition:.3s}
+.hamburger.active span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.hamburger.active span:nth-child(2){opacity:0}
+.hamburger.active span:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
 
-.main{flex:1;min-width:0}
-.topbar{background:#fff;border-bottom:1px solid var(--line);padding:18px 32px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:10}
-.topbar .l h1{font-size:22px;letter-spacing:-.5px;margin-bottom:2px}
-.topbar .l .crumb{font-size:10px;color:var(--gr);letter-spacing:2px;font-family:monospace}
-.topbar .r{display:flex;gap:8px;align-items:center}
-.btn{padding:8px 16px;border:1px solid var(--line);border-radius:6px;font-size:12px;font-weight:600;background:#fff;transition:.2s;display:inline-flex;align-items:center;gap:6px}
-.btn:hover{border-color:var(--k)}
-.btn-primary{background:var(--r);color:#fff;border-color:var(--r)}
-.btn-primary:hover{background:#a82420;border-color:#a82420}
-.btn-k{background:var(--k);color:#fff;border-color:var(--k)}
-.btn-sm{padding:5px 10px;font-size:11px}
+.sitemap-overlay{position:fixed;inset:0;background:rgba(20,20,20,.97);z-index:150;opacity:0;visibility:hidden;transition:.4s;overflow-y:auto}
+.sitemap-overlay.open{opacity:1;visibility:visible}
+.sitemap-inner{max-width:1280px;margin:0 auto;padding:120px 32px 60px;color:#fff}
+.sitemap-head{display:flex;justify-content:space-between;align-items:baseline;padding-bottom:30px;border-bottom:1px solid rgba(255,255,255,.15)}
+.sitemap-head .title{font-family:'Roboto',sans-serif;font-size:32px;font-weight:700;letter-spacing:4px}
+.sitemap-head .meta{font-size:11px;color:#aaa;letter-spacing:.5px}
+.sitemap-head .meta b{color:#fff;font-weight:600;margin-right:4px}
+.sitemap-head .div{margin:0 12px;opacity:.3}
+.sitemap-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:50px 60px;padding:50px 0}
+.sitemap-col-head{display:flex;flex-direction:column;gap:6px;padding-bottom:14px;border-bottom:1px solid rgba(255,255,255,.2);margin-bottom:14px}
+.sitemap-col-head .num{font-family:'Roboto Mono',monospace;font-size:10px;color:var(--r);letter-spacing:2px}
+.sitemap-col-head .ko{font-size:20px;font-weight:700}
+.sitemap-col-head .en{font-family:'Roboto',sans-serif;font-size:11px;color:#888;letter-spacing:2px}
 
-#content{padding:28px 32px}
+.direct-cta{position:fixed;right:24px;bottom:24px;z-index:90;display:flex;flex-direction:column;gap:10px}
+.cta-kakao,.cta-contact{display:flex;align-items:center;gap:12px;background:#FEE500;color:#191600;padding:12px 18px;border-radius:99px;font-weight:700;font-size:13px;box-shadow:0 6px 24px rgba(0,0,0,.15);position:relative;transition:.2s}
+.cta-contact{background:var(--k);color:#fff}
+.cta-kakao:hover,.cta-contact:hover{transform:translateY(-2px)}
+.cta-kakao .icon,.cta-contact .icon{width:22px;height:22px;display:flex;align-items:center;justify-content:center}
+.cta-kakao .icon svg,.cta-contact .icon svg{width:100%;height:100%;fill:currentColor}
+.cta-kakao .text,.cta-contact .text{display:flex;flex-direction:column;line-height:1.2}
+.cta-kakao .text small,.cta-contact .text small{font-size:9px;opacity:.7;font-weight:400;letter-spacing:1px;margin-top:2px}
+.pulse-dot{position:absolute;top:8px;right:8px;width:8px;height:8px;background:#ff3b30;border-radius:50%;animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.4);opacity:.6}}
 
-/* CARDS */
-.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
-.stat-card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:20px;cursor:pointer;transition:.2s}
-.stat-card:hover{border-color:var(--k);transform:translateY(-2px)}
-.stat-label{font-size:10px;letter-spacing:2px;color:var(--gr);font-family:monospace;margin-bottom:8px}
-.stat-num{font-size:32px;font-weight:300;font-family:'Roboto',sans-serif;letter-spacing:-1px;line-height:1}
-.stat-sub{font-size:11px;color:var(--gr);margin-top:4px}
+.page{display:none;padding-top:106px}
+.page.active{display:block}
+.page-head{padding:80px 0 60px;border-bottom:1px solid var(--line);background:var(--bg)}
+.page-head .ix{font-family:'Roboto Mono',monospace;font-size:11px;color:var(--gr);letter-spacing:3px;margin-bottom:24px}
+.page-head .ix b{color:var(--k)}
+.page-head h1{font-family:'Roboto',sans-serif;font-size:80px;font-weight:300;letter-spacing:-2px;line-height:1;margin-bottom:18px}
+.page-head .ko-sub{font-size:22px;font-weight:600;margin-bottom:20px;color:var(--k)}
+.page-head .desc{font-size:15px;color:var(--k2);max-width:680px;line-height:1.8}
+.page-head .desc b{font-weight:700;color:var(--k)}
+.deco-line{display:block;width:60px;height:1px;background:var(--k);margin-top:40px}
 
-.card{background:#fff;border:1px solid var(--line);border-radius:10px;margin-bottom:16px;overflow:hidden}
-.card-head{padding:16px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}
-.card-head h3{font-size:14px;font-weight:700;letter-spacing:-.3px}
-.card-head .ct{font-size:11px;color:var(--gr);font-family:monospace}
-.card-body{padding:0}
+.section-title{display:flex;align-items:center;gap:18px;margin-bottom:50px;font-family:'Roboto',sans-serif}
+.section-title .num{font-family:'Roboto Mono',monospace;font-size:11px;color:var(--r);letter-spacing:3px}
+.section-title .en{font-size:28px;font-weight:300;letter-spacing:-.5px}
+.section-title .divider{flex:1;height:1px;background:var(--line)}
+.section-title .ko{font-family:'Pretendard Variable',sans-serif;font-size:14px;color:var(--gr);font-weight:500}
 
-/* TABLE */
-table{width:100%;border-collapse:collapse}
-thead th{background:#fafafa;font-size:10px;letter-spacing:1.5px;color:var(--gr);font-weight:600;text-align:left;padding:10px 16px;border-bottom:1px solid var(--line)}
-tbody td{padding:12px 16px;border-bottom:1px solid #f5f5f5;font-size:13px;vertical-align:middle}
-tbody tr:hover{background:#fafafa}
-tbody tr:last-child td{border-bottom:0}
+/* HERO */
+.fullhero{position:relative;height:100vh;min-height:640px;overflow:hidden;margin-top:106px;background:#1a1a1a}
+.fh-stack{position:absolute;inset:0}
+.fh-slide{position:absolute;inset:0;opacity:0;transition:opacity 1.2s ease}
+.fh-slide.active{opacity:1}
+.fh-overlay{position:absolute;inset:0;background:linear-gradient(135deg,rgba(0,0,0,.55) 0%,rgba(0,0,0,.25) 50%,rgba(0,0,0,.5) 100%)}
+.fh-dots{position:absolute;right:32px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:14px;z-index:5}
+.fh-dots .dot{width:10px;height:10px;border:1.5px solid rgba(255,255,255,.4);background:transparent;border-radius:50%;transition:.3s;padding:0}
+.fh-dots .dot.active{background:#fff;border-color:#fff;transform:scale(1.2)}
+.fh-caption{position:absolute;left:48px;bottom:64px;color:#fff;z-index:5;max-width:600px}
+.cap-num{font-family:'Roboto Mono',monospace;font-size:11px;letter-spacing:4px;opacity:.7;margin-bottom:24px}
+.fh-cap-item{display:none}
+.fh-cap-item.active{display:block;animation:slideUp .8s ease}
+@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.cap-title{font-family:'Roboto',sans-serif;font-size:14px;font-weight:700;letter-spacing:6px;margin-bottom:18px;color:#fff}
+.cap-ko-1{font-size:48px;font-weight:300;line-height:1.2;margin-bottom:14px;letter-spacing:-1px}
+.cap-ko-1 b{font-weight:700}
+.cap-ko-2{font-size:15px;opacity:.85;margin-bottom:32px;letter-spacing:.5px}
+.cap-btn{display:inline-flex;align-items:center;gap:10px;padding:14px 28px;border:1px solid rgba(255,255,255,.6);font-size:12px;letter-spacing:3px;font-weight:600;transition:.3s}
+.cap-btn:hover{background:#fff;color:var(--k)}
+.cap-btn::after{content:'→'}
 
-.tag{display:inline-block;font-size:10px;font-weight:700;letter-spacing:1px;padding:3px 9px;border-radius:99px;color:#fff}
-.tag.r{background:var(--r)} .tag.g{background:var(--g)} .tag.b{background:var(--b)} .tag.k{background:var(--gr)}
-.tag.pending{background:#f59e0b}
-.tag.new{background:#3b82f6}
-.tag.contacted{background:#8b5cf6}
-.tag.quoted{background:#06b6d4}
-.tag.won{background:var(--g)}
-.tag.lost,.tag.closed{background:#888}
-.tag.draft{background:#888}
-.tag.published{background:var(--g)}
-.tag.answered{background:var(--g)}
+.home-divisions{padding:120px 0;background:#fff}
+.brands-statement{text-align:center;padding:40px 0 80px;position:relative}
+.quote-marker{font-family:'Roboto',serif;font-size:200px;color:var(--bg2);line-height:.5;position:absolute;top:40px;left:50%;transform:translateX(-50%);z-index:0}
+.brands-statement-h2{position:relative;z-index:1;font-size:42px;font-weight:300;line-height:1.4;letter-spacing:-1px;margin-bottom:40px}
+.brands-statement-h2 b{font-weight:700;color:var(--r)}
+.statement-brand-label{font-family:'Roboto Mono',monospace;font-size:11px;color:var(--gr);letter-spacing:3px;margin-bottom:24px}
+.statement-divisions{display:flex;justify-content:center;align-items:center;gap:20px;font-size:24px;font-weight:700}
+.sd-word.r{color:var(--r)} .sd-word.g{color:var(--g)} .sd-word.b{color:var(--b)}
+.sd-dot{width:6px;height:6px;background:var(--k);border-radius:50%;opacity:.3}
 
-/* FILTERS */
-.filters{padding:12px 16px;display:flex;gap:6px;flex-wrap:wrap;border-bottom:1px solid var(--line);background:#fafafa}
-.filter-btn{padding:6px 12px;font-size:11px;font-weight:600;border:1px solid var(--line);border-radius:99px;background:#fff;transition:.2s}
-.filter-btn.active{background:var(--k);color:#fff;border-color:var(--k)}
-.filter-btn .ct{margin-left:4px;font-family:monospace;opacity:.7}
+.divisions-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:32px;margin-top:40px}
+.div-card{padding:48px 36px;border:1px solid var(--line);background:#fff;transition:.4s;position:relative;overflow:hidden;display:block}
+.div-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:currentColor;transform:scaleX(0);transform-origin:left;transition:.4s}
+.div-card:hover{transform:translateY(-8px);box-shadow:0 24px 48px rgba(0,0,0,.08)}
+.div-card:hover::before{transform:scaleX(1)}
+.div-card.r{color:var(--r)} .div-card.g{color:var(--g)} .div-card.b{color:var(--b)}
+.div-card .top{display:flex;align-items:center;justify-content:space-between;margin-bottom:30px}
+.div-card .swatch{display:inline-block;width:44px;height:44px;border:1.5px solid currentColor;border-radius:50%;position:relative}
+.div-card .swatch i{position:absolute;inset:8px;background:currentColor;border-radius:50%}
+.div-card h3{font-size:32px;font-weight:800;color:var(--k);letter-spacing:-1px;margin-bottom:6px}
+.div-card .ko-name{font-size:12px;color:var(--gr);font-weight:500;margin-bottom:24px;letter-spacing:1px}
+.div-card p{font-size:13px;color:var(--k2);line-height:1.7;margin-bottom:32px}
+.div-card .arrow{font-size:11px;font-weight:700;letter-spacing:2px;color:currentColor;border-bottom:1px solid currentColor;padding-bottom:4px}
 
-/* ACTIONS */
-.row-actions{display:flex;gap:4px;justify-content:flex-end}
-.icon-btn{width:30px;height:30px;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;transition:.15s;color:var(--gr)}
-.icon-btn:hover{background:#f0f0f0;color:var(--k)}
-.icon-btn.danger:hover{background:#fee2e2;color:var(--r)}
+/* Image gradients */
+.img-school-1{background:linear-gradient(135deg,#3d4f6b 0%,#1a2638 100%)}
+.img-school-2{background:linear-gradient(135deg,#8a7e6d 0%,#3d3528 100%)}
+.img-school-3{background:linear-gradient(135deg,#5a6b7d 0%,#2a3540 100%)}
+.img-school-4{background:linear-gradient(135deg,#7a6855 0%,#3a2e22 100%)}
+.img-school-5{background:linear-gradient(135deg,#465a72 0%,#1a2030 100%)}
+.img-school-6{background:linear-gradient(135deg,#6b5d4e 0%,#2e2820 100%)}
+.img-school-7{background:linear-gradient(135deg,#4a5266 0%,#1f2438 100%)}
+.img-pat{position:absolute;inset:0;opacity:.15;background-image:radial-gradient(circle at 20% 30%,rgba(255,255,255,.4) 0%,transparent 40%),radial-gradient(circle at 80% 60%,rgba(255,255,255,.3) 0%,transparent 50%)}
 
-/* EMPTY */
-.empty{padding:60px 20px;text-align:center;color:var(--gr)}
-.empty .ico{font-size:36px;opacity:.3;margin-bottom:12px}
-.empty h4{font-size:14px;color:#666;margin-bottom:6px}
-.empty p{font-size:12px}
+.home-portfolio{padding:0;background:var(--k);color:#fff}
+.pp-head{text-align:center;padding:100px 32px 60px}
+.pp-section-title{font-family:'Roboto',sans-serif;font-size:48px;font-weight:300;letter-spacing:-1px;margin-bottom:18px}
+.pp-sub{font-size:14px;color:#999;letter-spacing:.5px}
+.ppg-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0}
+.ppg-item{position:relative;aspect-ratio:1;overflow:hidden;cursor:pointer}
+.ppg-img{position:absolute;inset:0;transition:transform .8s ease}
+.ppg-item:hover .ppg-img{transform:scale(1.08)}
+.ppg-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.92) 0%,rgba(0,0,0,.2) 60%,transparent 100%);display:flex;flex-direction:column;justify-content:flex-end;padding:24px;opacity:0;transition:.4s}
+.ppg-item:hover .ppg-overlay{opacity:1}
+.ppg-cat{display:inline-block;font-size:10px;font-weight:700;letter-spacing:2px;padding:4px 10px;background:rgba(255,255,255,.15);backdrop-filter:blur(8px);border-radius:99px;align-self:flex-start;margin-bottom:14px}
+.ppg-cat.glsori{background:var(--r)} .ppg-cat.gongan{background:var(--g)} .ppg-cat.mudae{background:var(--b)}
+.ppg-title{font-size:16px;font-weight:700;margin-bottom:4px;letter-spacing:-.5px}
+.ppg-en{font-family:'Roboto',sans-serif;font-size:11px;color:#aaa;letter-spacing:1px}
 
-/* MODAL */
-#modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:flex-start;justify-content:center;z-index:100;padding:40px 20px;overflow-y:auto}
-#modal.active{display:flex}
-.modal-panel{background:#fff;border-radius:12px;max-width:640px;width:100%;max-height:calc(100vh - 80px);overflow-y:auto;animation:modalIn .2s ease}
-@keyframes modalIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
-.modal-head{padding:18px 24px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:#fff;z-index:1}
-.modal-head h3{font-size:16px;letter-spacing:-.3px}
-.modal-close{width:32px;height:32px;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;color:var(--gr);font-size:20px}
-.modal-close:hover{background:#f0f0f0;color:var(--k)}
-.modal-body{padding:24px}
-.modal-foot{padding:16px 24px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:8px;position:sticky;bottom:0;background:#fff}
+.empty-state{padding:80px 32px;text-align:center;color:#888;grid-column:1/-1}
+.empty-state .icon{font-size:48px;margin-bottom:16px;opacity:.3}
+.empty-state h3{font-size:18px;margin-bottom:8px;color:#bbb}
+.empty-state p{font-size:13px}
 
-.field{margin-bottom:16px}
-.field label{display:block;font-size:11px;font-weight:700;letter-spacing:1.5px;color:var(--gr);margin-bottom:6px}
-.field input,.field textarea,.field select{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:6px;transition:.15s}
-.field input:focus,.field textarea:focus,.field select:focus{outline:none;border-color:var(--k)}
-.field textarea{min-height:100px;resize:vertical;font-family:inherit}
-.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.field .req{color:var(--r)}
+.marquee-thin{background:var(--k);color:#fff;padding:18px 0;border-top:1px solid #333;border-bottom:1px solid #333;overflow:hidden}
+.marquee-thin .row{display:flex;overflow:hidden;margin:6px 0}
+.marquee-thin .track{display:flex;flex-shrink:0;animation:marqL 40s linear infinite;white-space:nowrap}
+.marquee-thin .r2 .track{animation:marqR 40s linear infinite}
+@keyframes marqL{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@keyframes marqR{from{transform:translateX(-50%)}to{transform:translateX(0)}}
+.marquee-thin span{font-family:'Roboto',sans-serif;font-size:22px;font-weight:300;letter-spacing:1px;padding-right:32px;display:flex;align-items:center}
+.marquee-thin .sep{display:inline-block;width:8px;height:8px;background:var(--r);border-radius:50%;margin-left:32px}
 
-.upload-area{border:2px dashed var(--line);border-radius:8px;padding:24px;text-align:center;cursor:pointer;transition:.2s;background:#fafafa;position:relative}
-.upload-area:hover{border-color:var(--k);background:#f5f5f5}
-.upload-area.dragover{border-color:var(--k);background:#fff5f5;border-style:solid;transform:scale(1.01)}
-.upload-area.has-image{padding:0;border-style:solid;background:#000}
-.upload-area img{width:100%;height:200px;object-fit:cover;border-radius:6px;display:block}
-.upload-area .placeholder{color:var(--gr);font-size:13px;pointer-events:none}
-.upload-area .ico{font-size:32px;opacity:.3;margin-bottom:8px}
-.upload-area .drag-hint{display:block;font-size:11px;margin-top:6px;color:#aaa}
-.upload-area .remove-img{position:absolute;top:8px;right:8px;width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,.7);color:#fff;display:none;align-items:center;justify-content:center;font-size:18px;z-index:2;border:none;cursor:pointer}
-.upload-area.has-image .remove-img{display:inline-flex}
-.upload-area.has-image .remove-img:hover{background:rgba(200,48,43,.95)}
+.home-final-cta{padding:160px 0;text-align:center;background:var(--bg);position:relative}
+.home-final-cta .pre{font-family:'Roboto',sans-serif;font-size:12px;letter-spacing:4px;color:var(--gr);margin-bottom:28px}
+.home-final-cta h2{font-size:64px;font-weight:300;line-height:1.3;letter-spacing:-2px;margin-bottom:32px}
+.home-final-cta h2 b{font-weight:700}
+.home-final-cta h2 .r{color:var(--r);font-weight:700}
+.home-final-cta .en{font-family:'Roboto',sans-serif;font-size:13px;color:var(--gr);letter-spacing:3px;margin-bottom:48px}
+.home-final-cta .btn{display:inline-block;padding:20px 56px;background:var(--k);color:#fff;font-family:'Roboto',sans-serif;font-size:13px;font-weight:700;letter-spacing:3px;transition:.3s}
+.home-final-cta .btn:hover{background:var(--r);transform:translateY(-2px)}
 
-.qa-thread{padding:18px;border-radius:8px;margin-bottom:12px;font-size:13px;line-height:1.7}
-.qa-q{background:#fafafa;border-left:3px solid #ccc}
-.qa-a{background:#fff8f7;border-left:3px solid var(--r)}
-.qa-label{font-weight:700;font-size:12px;margin-right:6px}
-.qa-meta{font-size:11px;color:var(--gr);margin-top:8px;font-family:monospace}
+.footer{background:#0a0a0a;color:#aaa;padding:80px 0 40px}
+.footer-inner{max-width:1280px;margin:0 auto;padding:0 32px}
+.footer-top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;padding-bottom:50px;border-bottom:1px solid #222}
+.footer-brand .logo-text{font-family:'Roboto',sans-serif;font-size:32px;font-weight:800;color:#fff;letter-spacing:-1px;margin-bottom:20px;display:block}
+.footer-brand .logo-text .semi{color:var(--r);font-style:italic}
+.slogan{font-size:13px;line-height:1.7;color:#ccc;margin-bottom:24px}
+.biz-info{font-size:11px;line-height:1.8;color:#777}
+.footer-col h6{font-family:'Roboto',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;color:#fff;margin-bottom:20px}
+.footer-col a{display:block;font-size:12px;color:#888;padding:6px 0;transition:.2s}
+.footer-col a:hover{color:#fff}
+.footer-bottom{display:flex;justify-content:space-between;padding-top:30px;font-family:'Roboto Mono',monospace;font-size:11px;color:#555;letter-spacing:1px}
 
-/* TOAST */
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--k);color:#fff;padding:12px 24px;border-radius:99px;font-size:13px;font-weight:500;z-index:200;opacity:0;transition:.3s;box-shadow:0 8px 24px rgba(0,0,0,.2)}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-.toast.error{background:var(--r)}
-.toast.success{background:var(--g)}
+/* Skeletons */
+.skeleton{background:linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%);background-size:200% 100%;animation:skel 1.5s infinite;border-radius:4px}
+@keyframes skel{0%{background-position:200% 0}100%{background-position:-200% 0}}
 
-/* RESPONSIVE */
-@media(max-width:900px){
-  #admin{flex-direction:column}
-  .sidebar{width:100%;height:auto;position:sticky;top:0;flex-direction:row;overflow-x:auto}
-  .sb-head{padding:12px 16px;border-right:1px solid rgba(255,255,255,.1);border-bottom:0;flex-shrink:0}
-  .sb-logo{font-size:18px}
-  .sb-tag{display:none}
-  .sb-nav{display:flex;padding:0;flex:1;overflow-x:auto}
-  .sb-group{display:none}
-  .sb-item{flex-shrink:0;border-left:0;border-bottom:3px solid transparent;padding:14px 16px}
-  .sb-item.active{border-left-color:transparent;border-bottom-color:var(--r);background:transparent}
-  .sb-foot{display:none}
-  .topbar{padding:14px 16px}
-  .topbar .l h1{font-size:18px}
-  #content{padding:16px}
-  .grid-4{grid-template-columns:1fr 1fr;gap:10px}
-  .stat-num{font-size:26px}
-  table{font-size:12px}
-  thead th,tbody td{padding:10px}
-  .field-row{grid-template-columns:1fr}
-  .modal-panel{max-height:calc(100vh - 40px)}
+@media(max-width:1100px){
+  .nav-menu{display:none}
+  .ver-badge{display:none}
+  .header-top .l{display:none}
+  .ppg-grid{grid-template-columns:repeat(2,1fr)}
+  .footer-top{grid-template-columns:1fr 1fr}
+  .container{padding:0 24px}
+}
+
+@media(max-width:768px){
+  body{font-size:14px}
+  .header-top{display:none}
+  .header-main{padding:14px 20px;justify-content:flex-start}
+  .logo .name{font-size:22px}
+  .logo .sub{font-size:9px;letter-spacing:1.5px}
+  .hamburger{top:14px;right:16px;width:40px;height:40px}
+  .page{padding-top:68px}
+  .fullhero{margin-top:68px;min-height:560px;height:auto}
+  .live-status{top:80px;left:14px;font-size:10px;padding:6px 12px}
+  .direct-cta{right:14px;bottom:14px;gap:8px}
+  .cta-kakao,.cta-contact{padding:11px 16px;font-size:12px}
+  .cta-kakao .text small,.cta-contact .text small{display:none}
+  .fh-caption{left:24px;bottom:64px;max-width:none;right:64px}
+  .cap-ko-1{font-size:30px!important;line-height:1.25}
+  .cap-ko-2{font-size:13px}
+  .home-divisions{padding:72px 0}
+  .quote-marker{font-size:100px;top:30px}
+  .brands-statement-h2{font-size:24px!important;line-height:1.5}
+  .divisions-grid{grid-template-columns:1fr;gap:16px}
+  .div-card{padding:32px 28px}
+  .div-card h3{font-size:28px}
+  .pp-section-title{font-size:32px}
+  .home-final-cta{padding:96px 0}
+  .home-final-cta h2{font-size:30px!important}
+  .footer-top{grid-template-columns:1fr;gap:32px}
+  .footer-bottom{flex-direction:column;gap:12px;text-align:center}
+}
+
+@media(max-width:480px){
+  .logo .name{font-size:20px}
+  .logo .sub{display:none}
+  .fh-caption{left:20px;bottom:40px;right:52px}
+  .cap-ko-1{font-size:22px!important}
+  .direct-cta .cta-kakao .text,.direct-cta .cta-contact .text{display:none}
+  .cta-kakao,.cta-contact{padding:0;width:48px;height:48px;border-radius:50%;justify-content:center}
+  .ppg-grid{grid-template-columns:1fr}
+  .home-final-cta h2{font-size:22px!important}
 }
 </style>
 </head>
 <body>
 
-<!-- LOGIN SCREEN -->
-<div id="login" class="screen active">
-  <div class="login-box">
-    <div class="login-logo">SKOOL<span class="s">;</span>D<sup style="font-size:11px;opacity:.5">®</sup></div>
-    <div class="login-sub">ADMIN PANEL · v0.1</div>
-    <h2>관리자 로그인</h2>
-    <form id="loginForm">
-      <div class="login-field">
-        <label>EMAIL</label>
-        <input type="email" id="loginEmail" required autocomplete="email" placeholder="admin@skoold.kr">
-      </div>
-      <div class="login-field">
-        <label>PASSWORD</label>
-        <input type="password" id="loginPassword" required autocomplete="current-password">
-      </div>
-      <button type="submit" class="login-btn" id="loginBtn">로그인</button>
-      <div class="login-error" id="loginError"></div>
-    </form>
-    <div class="login-foot">© SKOOL;D · School Branding Lab</div>
-  </div>
+<!-- Live Status Indicator -->
+<div class="live-status" id="liveStatus">
+  <span class="dot"></span>
+  <span class="text">연결 중...</span>
 </div>
 
-<!-- ADMIN SCREEN -->
-<div id="admin" class="screen">
-  <aside class="sidebar">
-    <div class="sb-head">
-      <div class="sb-logo">SKOOL<span class="s">;</span>D</div>
-      <div class="sb-tag">ADMIN · v0.1</div>
+<!-- HEADER -->
+<header class="header">
+  <div class="header-top">
+    <div class="header-top-inner">
+      <div class="l">스쿨디자인 토탈솔루션기업</div>
+      <div class="r" id="headerContact">
+        <div><span>MAIL.</span><b>skd8110@daum.net</b></div>
+        <div><span>TEL.</span><b>032-873-2626</b></div>
+        <div><span>MOBILE.</span><b>010-5440-8110</b></div>
+      </div>
     </div>
-    <nav class="sb-nav" id="sbNav">
-      <div class="sb-group">메인</div>
-      <a class="sb-item active" data-page="dashboard">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-        대시보드
-      </a>
-      <div class="sb-group">콘텐츠</div>
-      <a class="sb-item" data-page="portfolios">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
-        포트폴리오
-      </a>
-      <a class="sb-item" data-page="qna">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-        Q&A 게시판
-        <span class="badge" id="qnaBadge" style="display:none">0</span>
-      </a>
-      <a class="sb-item" data-page="inquiries">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>
-        문의함
-        <span class="badge" id="inqBadge" style="display:none">0</span>
-      </a>
-      <a class="sb-item" data-page="hero">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-        히어로 슬라이드
-      </a>
-      <div class="sb-group">시스템</div>
-      <a class="sb-item" data-page="settings">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-        회사 정보
-      </a>
+  </div>
+  <div class="header-main">
+    <a class="logo" data-page="home">
+      <span class="name">SKOOL<span class="semi">;</span>D<sup>®</sup></span>
+      <span class="sub">School Branding Lab — Est. 2008</span>
+    </a>
+    <span class="ver-badge">v3.4 LIVE</span>
+    <nav class="nav-menu">
+      <a data-page="home" class="active"><span class="nm-num">00</span>HOME</a>
+      <a data-page="about"><span class="nm-num">01</span>ABOUT</a>
+      <a data-page="portfolio"><span class="nm-num">02</span>PORTFOLIO</a>
+      <a data-page="clients"><span class="nm-num">03</span>CLIENTS</a>
+      <a data-page="contact"><span class="nm-num">04</span>CONTACT</a>
     </nav>
-    <div class="sb-foot">
-      <div class="sb-avatar" id="userAvatar">?</div>
-      <div class="sb-user">
-        <div class="name" id="userName">-</div>
-        <div class="role" id="userRole">-</div>
-      </div>
-      <button class="sb-logout" id="logoutBtn" title="로그아웃">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-      </button>
+  </div>
+</header>
+
+<button class="hamburger" id="hamburgerBtn">
+  <span></span><span></span><span></span>
+</button>
+
+<div class="direct-cta">
+  <a class="cta-kakao" href="https://pf.kakao.com/_JVxbBG" target="_blank" id="kakaoBtn">
+    <span class="pulse-dot"></span>
+    <span class="icon"><svg viewBox="0 0 36 36"><path d="M18 5C10.82 5 5 9.61 5 15.3c0 3.72 2.48 6.96 6.19 8.79-.27.95-.98 3.47-1.12 4.01-.18.67.25.66.52.48.21-.14 3.36-2.28 4.71-3.2.88.13 1.78.21 2.7.21 7.18 0 13-4.61 13-10.29C31 9.61 25.18 5 18 5z"/></svg></span>
+    <span class="text">카톡 상담하기<small>1:1 채팅 · 빠른 응답</small></span>
+  </a>
+  <a class="cta-contact" data-page="contact">
+    <span class="icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 3v2H4v13.385L5.763 17H20v-7h2v8c0 .55-.45 1-1 1H6.616L2 22.692V4c0-.55.45-1 1-1h11zm5 0V0h2v3h3v2h-3v3h-2V5h-3V3h3z"/></svg></span>
+    <span class="text">문의하기<small>CONTACT US</small></span>
+  </a>
+</div>
+
+<!-- HOME PAGE -->
+<section class="page active" data-page="home">
+  <!-- HERO (dynamic from Supabase) -->
+  <div class="fullhero">
+    <div class="fh-stack" id="fhStack">
+      <!-- Slides injected by JS -->
     </div>
-  </aside>
-  
-  <main class="main">
-    <div class="topbar">
-      <div class="l">
-        <div class="crumb" id="crumb">ADMIN / DASHBOARD</div>
-        <h1 id="pageTitle">대시보드</h1>
+    <div class="fh-overlay"></div>
+    <div class="fh-dots" id="fhDots"></div>
+    <div class="fh-caption">
+      <div class="cap-num" id="fhCapNum">01 / 07</div>
+      <div id="fhCaptionWrap"></div>
+    </div>
+  </div>
+
+  <div class="home-divisions">
+    <div class="container">
+      <div class="section-title">
+        <span class="num">01</span><span class="en">3 Brands</span>
+        <span class="divider"></span><span class="ko">3개의 브랜드, 하나의 시스템</span>
       </div>
-      <div class="r">
-        <a href="https://skoold-homepage.vercel.app/" target="_blank" rel="noopener" class="btn">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-          사이트 보기
+
+      <div class="brands-statement">
+        <div class="quote-marker">"</div>
+        <h2 class="brands-statement-h2">
+          3개의 <b>브랜드</b>가 하나의 하모니를 이루어<br>
+          학교의 가치를 높이는 만능 <b>KEY</b>가 됩니다.
+        </h2>
+        <div class="statement-brand-label">— (주)스쿨디의 3개 브랜드 —</div>
+        <div class="statement-divisions">
+          <span class="sd-word r">글소리</span>
+          <span class="sd-dot"></span>
+          <span class="sd-word g">공간소리</span>
+          <span class="sd-dot"></span>
+          <span class="sd-word b">무대소리</span>
+        </div>
+      </div>
+
+      <div class="divisions-grid">
+        <a class="div-card r" data-page="about">
+          <div class="top"><span class="swatch"><i></i></span></div>
+          <h3>글소리</h3>
+          <div class="ko-name">인쇄·출판 디자인</div>
+          <p>학교의 메시지를 정확하고 아름답게 — 브로슈어, 노트, 서식류, 출판 컨설팅까지.</p>
+          <span class="arrow">READ MORE →</span>
+        </a>
+        <a class="div-card g" data-page="about">
+          <div class="top"><span class="swatch"><i></i></span></div>
+          <h3>공간소리</h3>
+          <div class="ko-name">공간·환경개선, 사인디자인</div>
+          <p>공간이 학생들의 영감이 될 수 있도록 — 일관된 공간구축 시스템으로 학교의 정체성을 표현합니다.</p>
+          <span class="arrow">READ MORE →</span>
+        </a>
+        <a class="div-card b" data-page="about">
+          <div class="top"><span class="swatch"><i></i></span></div>
+          <h3>무대소리</h3>
+          <div class="ko-name">행사·이벤트 디자인</div>
+          <p>입학·졸업식부터 축제, 체육대회까지 — 다양한 행사를 잊을 수 없는 무대로 디자인합니다.</p>
+          <span class="arrow">READ MORE →</span>
         </a>
       </div>
     </div>
-    <div id="content"></div>
-  </main>
-</div>
+  </div>
 
-<!-- MODAL -->
-<div id="modal"></div>
+  <!-- Portfolio (dynamic from Supabase) -->
+  <div class="home-portfolio">
+    <div class="pp-head">
+      <h2 class="pp-section-title">PROJECT PORTFOLIO</h2>
+      <p class="pp-sub">다양하고 임팩트 있는 학교 브랜딩을 진행합니다</p>
+    </div>
+    <div class="ppg-grid" id="ppgGrid">
+      <!-- Items injected by JS -->
+    </div>
+  </div>
 
-<!-- TOAST -->
-<div class="toast" id="toast"></div>
+  <div class="marquee-thin">
+    <div class="row r1"><div class="track">
+      <span>학교의 가치를 올려드립니다<span class="sep"></span></span>
+      <span>MADE BY SKOOL;D<span class="sep"></span></span>
+      <span>글소리 · 공간소리 · 무대소리<span class="sep"></span></span>
+      <span>THE KEY TO SCHOOL DESIGN<span class="sep"></span></span>
+      <span>NOTHING IS IMPOSSIBLE<span class="sep"></span></span>
+      <span>스쿨디가 하면 다릅니다<span class="sep"></span></span>
+      <span>학교의 가치를 올려드립니다<span class="sep"></span></span>
+      <span>MADE BY SKOOL;D<span class="sep"></span></span>
+      <span>글소리 · 공간소리 · 무대소리<span class="sep"></span></span>
+      <span>THE KEY TO SCHOOL DESIGN<span class="sep"></span></span>
+      <span>NOTHING IS IMPOSSIBLE<span class="sep"></span></span>
+      <span>스쿨디가 하면 다릅니다<span class="sep"></span></span>
+    </div></div>
+  </div>
+
+  <div class="home-final-cta">
+    <div class="container-narrow">
+      <div class="pre">— Let's Start —</div>
+      <h2>스쿨디에게 <b>불가능</b>은 없습니다.<br><span class="r">학교</span>의 KEY를 함께 만들어봅니다.</h2>
+      <div class="en">Nothing is Impossible to SKOOL;D</div>
+      <a class="btn" data-page="contact">START A PROJECT →</a>
+    </div>
+  </div>
+</section>
+
+<!-- Other pages placeholder -->
+<section class="page" data-page="about">
+  <div class="page-head"><div class="container">
+    <div class="ix">SECTION <b>01</b> / 04</div>
+    <h1>About</h1>
+    <div class="ko-sub">회사 소개 페이지 (v3.4 추후 보완)</div>
+    <p class="desc">v3.3 기준 풍부한 콘텐츠가 있습니다. Supabase에서 받아오는 형태로 점진적 이관 예정.</p>
+  </div></div>
+</section>
+<section class="page" data-page="portfolio">
+  <div class="page-head"><div class="container">
+    <div class="ix">SECTION <b>02</b> / 04</div>
+    <h1>Portfolio</h1>
+    <div class="ko-sub" id="portfolioCount">로딩 중...</div>
+  </div></div>
+  <div class="container" style="padding-top:60px">
+    <div class="ppg-grid" id="portfolioFullGrid" style="background:#fff"></div>
+  </div>
+</section>
+<section class="page" data-page="clients">
+  <div class="page-head"><div class="container">
+    <div class="ix">SECTION <b>03</b> / 04</div>
+    <h1>Clients</h1>
+    <div class="ko-sub" id="clientsCount">로딩 중...</div>
+  </div></div>
+  <div class="container" style="padding-top:60px">
+    <div id="clientsGrid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px"></div>
+  </div>
+</section>
+<section class="page" data-page="contact">
+  <div class="page-head"><div class="container">
+    <div class="ix">SECTION <b>04</b> / 04</div>
+    <h1>Contact</h1>
+    <div class="ko-sub">견적·상담 문의</div>
+    <p class="desc" id="contactInfo">로딩 중...</p>
+  </div></div>
+  <div class="container" style="padding:60px 32px">
+    <form id="inquiryForm" style="max-width:680px;margin:0 auto;background:#fff;padding:40px;border:1px solid var(--line)">
+      <h3 style="margin-bottom:24px;font-size:20px">문의 작성</h3>
+      <div style="margin-bottom:16px"><label style="display:block;font-size:12px;font-weight:700;margin-bottom:6px">학교명 *</label><input type="text" name="school_name" required style="width:100%;padding:10px;border:1px solid var(--line);font-family:inherit"></div>
+      <div style="margin-bottom:16px"><label style="display:block;font-size:12px;font-weight:700;margin-bottom:6px">담당자명 *</label><input type="text" name="contact_person" required style="width:100%;padding:10px;border:1px solid var(--line);font-family:inherit"></div>
+      <div style="margin-bottom:16px"><label style="display:block;font-size:12px;font-weight:700;margin-bottom:6px">연락처 *</label><input type="text" name="phone" required style="width:100%;padding:10px;border:1px solid var(--line);font-family:inherit"></div>
+      <div style="margin-bottom:16px"><label style="display:block;font-size:12px;font-weight:700;margin-bottom:6px">이메일 *</label><input type="email" name="email" required style="width:100%;padding:10px;border:1px solid var(--line);font-family:inherit"></div>
+      <div style="margin-bottom:16px"><label style="display:block;font-size:12px;font-weight:700;margin-bottom:6px">제목</label><input type="text" name="subject" style="width:100%;padding:10px;border:1px solid var(--line);font-family:inherit"></div>
+      <div style="margin-bottom:24px"><label style="display:block;font-size:12px;font-weight:700;margin-bottom:6px">문의 내용 *</label><textarea name="content" required style="width:100%;padding:10px;border:1px solid var(--line);min-height:120px;font-family:inherit"></textarea></div>
+      <button type="submit" style="width:100%;padding:16px;background:var(--r);color:#fff;font-weight:700;letter-spacing:2px;font-family:inherit">SEND</button>
+      <div id="inquiryResult" style="margin-top:16px;font-size:13px;text-align:center"></div>
+    </form>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <span class="logo-text">SKOOL<span class="semi">;</span>D</span>
+        <div class="slogan" id="footerSlogan">The Key to School Design.<br>학교의 가치를 올려드립니다.</div>
+        <div class="biz-info" id="footerBizInfo">(주)스쿨디 SKOOL;D Co., Ltd.<br>본점. 인천 미추홀구 소성로 200<br>지점. 인천 동구 샛골로 230-1</div>
+      </div>
+      <div class="footer-col">
+        <h6>SITE</h6>
+        <a data-page="home">Home</a>
+        <a data-page="about">About</a>
+        <a data-page="portfolio">Portfolio</a>
+        <a data-page="clients">Clients</a>
+        <a data-page="contact">Contact</a>
+      </div>
+      <div class="footer-col">
+        <h6>BRANDS</h6>
+        <a>Glsori · 글소리</a>
+        <a>Gongan · 공간소리</a>
+        <a>Mudae · 무대소리</a>
+      </div>
+      <div class="footer-col">
+        <h6>CONTACT</h6>
+        <a id="footerEmail">skd8110@daum.net</a>
+        <a id="footerTel">TEL. 032-873-2626</a>
+        <a id="footerMobile">MOBILE. 010-5440-8110</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div>© 2008–2026 SKOOL;D Co., Ltd. All rights reserved.</div>
+      <div>— The Key to School Design</div>
+    </div>
+  </div>
+</footer>
 
 <script>
-// ============== CONFIG ==============
+// ===== SUPABASE CONFIG =====
 const SUPABASE_URL = 'https://vygcimhmdiucuyxasksu.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_DmxL3WFF9nqjW-pkFKGDoQ_CcwDmbgx';
-const TOKEN_KEY = 'sb-skoold-token';
-const REFRESH_KEY = 'sb-skoold-refresh';
-const USER_KEY = 'sb-skoold-user';
 
-// ============== STATE ==============
-let token = localStorage.getItem(TOKEN_KEY);
-let refreshToken = localStorage.getItem(REFRESH_KEY);
-let user = JSON.parse(localStorage.getItem(USER_KEY) || 'null');
-let currentPage = 'dashboard';
-let refreshPromise = null; // dedupe concurrent refresh calls
-
-const CAT = {
-  glsori: { ko: '글소리', c: '#C8302B' },
-  gongan: { ko: '공간소리', c: '#0E7C4F' },
-  mudae: { ko: '무대소리', c: '#1E3A8A' },
-  etc: { ko: '기타', c: '#888' },
-};
-
-// ============== UTILS ==============
-function $(s){return document.querySelector(s)}
-function $$(s){return document.querySelectorAll(s)}
-function toast(msg, type){
-  const t = $('#toast');
-  t.className = 'toast show ' + (type||'');
-  t.textContent = msg;
-  setTimeout(()=>t.classList.remove('show'), 2800);
-}
-function esc(s){return String(s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-function fmtDate(s){if(!s)return'';const d=new Date(s);return `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`}
-function fmtDateTime(s){if(!s)return'';const d=new Date(s);return `${fmtDate(s)} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`}
-
-// ============== API ==============
-async function refreshSession(){
-  if(!refreshToken) throw new Error('no_refresh_token');
-  // Reuse in-flight refresh to prevent stampede
-  if(refreshPromise) return refreshPromise;
-  refreshPromise = (async () => {
-    try {
-      const res = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=refresh_token`, {
-        method: 'POST',
-        headers: { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ refresh_token: refreshToken }),
-      });
-      if(!res.ok){
-        const t = await res.text();
-        console.error('[refresh] failed', res.status, t);
-        throw new Error('refresh_failed');
-      }
-      const data = await res.json();
-      token = data.access_token;
-      refreshToken = data.refresh_token || refreshToken;
-      localStorage.setItem(TOKEN_KEY, token);
-      localStorage.setItem(REFRESH_KEY, refreshToken);
-      console.log('[auth] session refreshed');
-      return token;
-    } finally {
-      refreshPromise = null;
+async function sb(table, params = '') {
+  const url = `${SUPABASE_URL}/rest/v1/${table}?select=*${params}`;
+  const res = await fetch(url, {
+    headers: {
+      'apikey': SUPABASE_KEY,
+      'Authorization': `Bearer ${SUPABASE_KEY}`,
     }
-  })();
-  return refreshPromise;
-}
-
-async function api(method, path, body, _retried){
-  const headers = { 'apikey': SUPABASE_KEY };
-  if(token) headers['Authorization'] = `Bearer ${token}`;
-  if(body){ headers['Content-Type'] = 'application/json'; headers['Prefer'] = 'return=representation' }
-  
-  const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
-    method, headers,
-    body: body ? JSON.stringify(body) : undefined,
   });
-  
-  if(res.status === 401 && !_retried && refreshToken){
-    try { await refreshSession(); return api(method, path, body, true); }
-    catch(_){ logout(); throw new Error('세션 만료 — 다시 로그인해주세요'); }
-  }
-  if(res.status === 401){ logout(); throw new Error('인증 만료. 다시 로그인해주세요.') }
-  if(!res.ok){ const t = await res.text(); throw new Error(`${res.status} ${t}`) }
-  if(res.status === 204) return null;
+  if (!res.ok) throw new Error(`${res.status}`);
   return res.json();
 }
 
-async function uploadFile(bucket, path, file, _retried){
-  const res = await fetch(`${SUPABASE_URL}/storage/v1/object/${bucket}/${path}`, {
+async function sbInsert(table, data) {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}`, {
     method: 'POST',
     headers: {
       'apikey': SUPABASE_KEY,
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': file.type,
-      'x-upsert': 'true',
+      'Authorization': `Bearer ${SUPABASE_KEY}`,
+      'Content-Type': 'application/json',
+      'Prefer': 'return=minimal',
     },
-    body: file,
+    body: JSON.stringify(data),
   });
-  if(res.status === 401 && !_retried && refreshToken){
-    try { await refreshSession(); return uploadFile(bucket, path, file, true); }
-    catch(_){ logout(); throw new Error('세션 만료 — 다시 로그인해주세요'); }
-  }
-  if(!res.ok){
-    const text = await res.text();
-    let msg = text;
-    try { const j = JSON.parse(text); msg = j.message || j.error || text; } catch(_){}
-    console.error('[storage upload]', res.status, msg);
-    if(res.status === 404)       msg = `버킷 '${bucket}'이 없습니다. Supabase → Storage에서 만드세요.`;
-    else if(res.status === 403)  msg = `권한 없음 — Storage 정책 확인 필요 (${msg})`;
-    else if(res.status === 413)  msg = '파일 용량 초과';
-    throw new Error(`[${res.status}] ${msg}`);
-  }
-  return `${SUPABASE_URL}/storage/v1/object/public/${bucket}/${path}`;
+  if (!res.ok) throw new Error(`${res.status} ${await res.text()}`);
+  return res.ok;
 }
 
-// ============== AUTH ==============
-async function login(email, password){
-  const res = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
-    method: 'POST',
-    headers: { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, password }),
+// Live status
+function setStatus(state, msg) {
+  const el = document.getElementById('liveStatus');
+  el.classList.remove('connected', 'error');
+  if (state) el.classList.add(state);
+  el.classList.add('show');
+  el.querySelector('.text').textContent = msg;
+  if (state === 'connected') {
+    setTimeout(() => el.classList.remove('show'), 3000);
+  }
+}
+
+// ===== LOAD DATA =====
+const fallbackHero = [
+  { display_order: 1, title: '글소리', main_copy: '학교의 글을 디자인합니다.', sub_copy: '브랜드 아이덴티티 · 출판 · 인쇄 디자인', link_page: 'about' },
+  { display_order: 2, title: '공간소리', main_copy: '학교의 공간을 짓습니다.', sub_copy: '도서관 · 가구 · 사이니지 디자인', link_page: 'about' },
+  { display_order: 3, title: '무대소리', main_copy: '학교의 무대를 세웁니다.', sub_copy: '행사 · 영상 · 음향 토탈 솔루션', link_page: 'about' },
+];
+
+async function loadAll() {
+  setStatus('', '연결 중...');
+  let connected = false;
+  try {
+    const [settings, hero, portfolios, clients] = await Promise.all([
+      sb('site_settings'),
+      sb('hero_slides', '&is_active=eq.true&order=display_order'),
+      sb('portfolios', '&status=eq.published&order=display_order,is_featured.desc'),
+      sb('clients', '&is_featured=eq.true&order=display_order'),
+    ]);
+    connected = true;
+    renderSettings(settings[0]);
+    renderHero(hero);
+    renderPortfolio(portfolios);
+    renderClients(clients);
+    setStatus('connected', `LIVE · Supabase 연결됨`);
+  } catch (e) {
+    console.error('Supabase fetch failed:', e);
+    renderHero(fallbackHero);
+    renderPortfolio([]);
+    renderClients([]);
+    setStatus('error', `오프라인 모드 (${e.message})`);
+  }
+}
+
+function renderSettings(s) {
+  if (!s) return;
+  // Header contact
+  const headerR = document.getElementById('headerContact');
+  if (headerR && s.email) {
+    headerR.innerHTML = `
+      <div><span>MAIL.</span><b>${s.email}</b></div>
+      <div><span>TEL.</span><b>${s.tel}</b></div>
+      <div><span>MOBILE.</span><b>${s.mobile}</b></div>
+    `;
+  }
+  // Footer
+  document.getElementById('footerSlogan').innerHTML = `${s.slogan_en || 'The Key to School Design.'}<br>${s.slogan_ko || ''}`;
+  document.getElementById('footerBizInfo').innerHTML = `${s.company_name}<br>${s.ceo ? 'CEO. ' + s.ceo + '<br>' : ''}본점. ${s.main_address}<br>지점. ${s.branch_address}`;
+  document.getElementById('footerEmail').textContent = s.email;
+  document.getElementById('footerTel').textContent = 'TEL. ' + s.tel;
+  document.getElementById('footerMobile').textContent = 'MOBILE. ' + s.mobile;
+  // Kakao
+  if (s.kakao_channel_url) {
+    document.getElementById('kakaoBtn').href = s.kakao_channel_url;
+  }
+  // Contact page info
+  document.getElementById('contactInfo').innerHTML = `<b>${s.email}</b> · <b>${s.tel}</b> · <b>${s.mobile}</b>`;
+}
+
+const gradients = ['img-school-1','img-school-2','img-school-3','img-school-4','img-school-5','img-school-6','img-school-7'];
+
+function renderHero(slides) {
+  const stack = document.getElementById('fhStack');
+  const dots = document.getElementById('fhDots');
+  const capWrap = document.getElementById('fhCaptionWrap');
+  stack.innerHTML = '';
+  dots.innerHTML = '';
+  capWrap.innerHTML = '';
+
+  slides.forEach((s, i) => {
+    const grad = gradients[i % gradients.length];
+    stack.innerHTML += `<div class="fh-slide ${i===0?'active':''} ${grad}" data-idx="${i}"><div class="img-pat"></div></div>`;
+    dots.innerHTML += `<button class="dot ${i===0?'active':''}" data-target="${i}"></button>`;
+    capWrap.innerHTML += `
+      <div class="fh-cap-item ${i===0?'active':''}" data-idx="${i}">
+        <div class="cap-title">${s.title}</div>
+        <div class="cap-ko-1">${s.main_copy.replace(/(\S+)/, '<b>$1</b>')}</div>
+        <div class="cap-ko-2">${s.sub_copy || ''}</div>
+        <a class="cap-btn" data-page="${s.link_page || 'about'}">프로젝트 보기</a>
+      </div>`;
   });
-  if(!res.ok){
-    const e = await res.json();
-    throw new Error(e.error_description || e.msg || '로그인 실패');
-  }
-  const data = await res.json();
-  token = data.access_token;
-  refreshToken = data.refresh_token;
-  localStorage.setItem(TOKEN_KEY, token);
-  localStorage.setItem(REFRESH_KEY, refreshToken);
+
+  document.querySelectorAll('.fh-dots .dot').forEach((d, i) => {
+    d.addEventListener('click', () => goSlide(i, slides.length));
+  });
+
+  if (window.heroInterval) clearInterval(window.heroInterval);
+  window.heroInterval = setInterval(() => {
+    const cur = document.querySelector('.fh-slide.active');
+    const idx = cur ? +cur.dataset.idx : 0;
+    goSlide((idx + 1) % slides.length, slides.length);
+  }, 5000);
+}
+
+function goSlide(n, total) {
+  document.querySelectorAll('.fh-slide').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.fh-dots .dot').forEach(d => d.classList.remove('active'));
+  document.querySelectorAll('.fh-cap-item').forEach(c => c.classList.remove('active'));
+  const s = document.querySelector(`.fh-slide[data-idx="${n}"]`);
+  const d = document.querySelectorAll('.fh-dots .dot')[n];
+  const c = document.querySelector(`.fh-cap-item[data-idx="${n}"]`);
+  if (s) s.classList.add('active');
+  if (d) d.classList.add('active');
+  if (c) c.classList.add('active');
+  document.getElementById('fhCapNum').textContent = `${String(n+1).padStart(2,'0')} / ${String(total).padStart(2,'0')}`;
+}
+
+function renderPortfolio(items) {
+  const grids = [document.getElementById('ppgGrid'), document.getElementById('portfolioFullGrid')];
+  const countEl = document.getElementById('portfolioCount');
   
-  // Load admin user info
-  const me = await api('GET', `admin_users?id=eq.${data.user.id}&select=*`);
-  if(!me || me.length === 0){
-    logout();
-    throw new Error('관리자 권한이 없습니다');
+  if (countEl) {
+    countEl.textContent = items.length > 0 ? `${items.length}건의 프로젝트` : '아직 등록된 프로젝트가 없습니다';
   }
-  if(!me[0].is_active){
-    logout();
-    throw new Error('비활성화된 계정입니다');
-  }
-  user = me[0];
-  localStorage.setItem(USER_KEY, JSON.stringify(user));
-  showAdmin();
-}
 
-function logout(){
-  token = null;
-  refreshToken = null;
-  user = null;
-  localStorage.removeItem(TOKEN_KEY);
-  localStorage.removeItem(REFRESH_KEY);
-  localStorage.removeItem(USER_KEY);
-  showLogin();
-}
-
-function showLogin(){
-  $('#login').classList.add('active');
-  $('#admin').classList.remove('active');
-}
-
-async function showAdmin(){
-  $('#login').classList.remove('active');
-  $('#admin').classList.add('active');
-  if(user){
-    $('#userAvatar').textContent = user.name[0];
-    $('#userName').textContent = user.name;
-    $('#userRole').textContent = user.role.toUpperCase();
-  }
-  await loadBadges();
-  navigate('dashboard');
-}
-
-async function loadBadges(){
-  try {
-    const [pendingQna, newInq] = await Promise.all([
-      api('GET', `qna_posts?status=eq.pending&select=id`),
-      api('GET', `inquiries?status=eq.new&select=id`),
-    ]);
-    const qB = $('#qnaBadge');
-    const iB = $('#inqBadge');
-    if(pendingQna.length){ qB.textContent = pendingQna.length; qB.style.display = 'inline-flex' }
-    else qB.style.display = 'none';
-    if(newInq.length){ iB.textContent = newInq.length; iB.style.display = 'inline-flex' }
-    else iB.style.display = 'none';
-  } catch(e){ console.error(e) }
-}
-
-// ============== NAVIGATION ==============
-function navigate(page){
-  currentPage = page;
-  $$('.sb-item').forEach(i=>i.classList.toggle('active', i.dataset.page === page));
-  const titles = { dashboard:'대시보드', portfolios:'포트폴리오', qna:'Q&A 게시판', inquiries:'문의함', hero:'히어로 슬라이드', settings:'회사 정보' };
-  $('#pageTitle').textContent = titles[page] || page;
-  $('#crumb').textContent = `ADMIN / ${page.toUpperCase()}`;
-  $('#content').innerHTML = '<div class="empty"><div class="ico">⏳</div><p>로딩 중...</p></div>';
-  ({
-    dashboard: renderDashboard,
-    portfolios: renderPortfolios,
-    qna: renderQna,
-    inquiries: renderInquiries,
-    hero: renderHero,
-    settings: renderSettings,
-  }[page] || renderDashboard)();
-}
-
-// ============== DASHBOARD ==============
-async function renderDashboard(){
-  try {
-    const [pf, qn, iq, hr] = await Promise.all([
-      api('GET', `portfolios?select=id,status`),
-      api('GET', `qna_posts?select=id,status`),
-      api('GET', `inquiries?select=id,status,created_at,school_name,subject&order=created_at.desc&limit=5`),
-      api('GET', `hero_slides?select=id,is_active`),
-    ]);
-    const pfPub = pf.filter(p=>p.status==='published').length;
-    const qnPending = qn.filter(q=>q.status==='pending').length;
-    const iqNew = iq.filter(i=>i.status==='new').length;
-    const hrActive = hr.filter(h=>h.is_active).length;
-    
-    $('#content').innerHTML = `
-      <div class="grid-4">
-        <div class="stat-card" onclick="navigate('portfolios')">
-          <div class="stat-label">PORTFOLIOS</div>
-          <div class="stat-num">${pf.length}</div>
-          <div class="stat-sub">공개 ${pfPub}건 / 전체 ${pf.length}건</div>
-        </div>
-        <div class="stat-card" onclick="navigate('qna')">
-          <div class="stat-label">Q&A · 미답변</div>
-          <div class="stat-num" style="color:${qnPending?'#C8302B':'#1a1a1a'}">${qnPending}</div>
-          <div class="stat-sub">전체 ${qn.length}건</div>
-        </div>
-        <div class="stat-card" onclick="navigate('inquiries')">
-          <div class="stat-label">신규 문의</div>
-          <div class="stat-num" style="color:${iqNew?'#C8302B':'#1a1a1a'}">${iqNew}</div>
-          <div class="stat-sub">처리 대기 중</div>
-        </div>
-        <div class="stat-card" onclick="navigate('hero')">
-          <div class="stat-label">활성 슬라이드</div>
-          <div class="stat-num">${hrActive}<span style="font-size:18px;color:#888"> / ${hr.length}</span></div>
-          <div class="stat-sub">홈 노출 중</div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-head">
-          <h3>최근 문의 5건</h3>
-          <button class="btn btn-sm" onclick="navigate('inquiries')">전체 보기 →</button>
-        </div>
-        <table>
-          <thead><tr><th style="width:90px">날짜</th><th>학교 / 제목</th><th style="width:90px">상태</th></tr></thead>
-          <tbody>
-            ${iq.length === 0 ? '<tr><td colspan="3" style="text-align:center;padding:32px;color:#888">아직 문의가 없습니다</td></tr>' :
-              iq.map(i=>`
-                <tr style="cursor:pointer" onclick="navigate('inquiries')">
-                  <td style="font-family:monospace;font-size:11px;color:#888">${fmtDate(i.created_at)}</td>
-                  <td><b>${esc(i.school_name)}</b> · ${esc(i.subject || '제목 없음')}</td>
-                  <td><span class="tag ${i.status}">${i.status}</span></td>
-                </tr>`).join('')}
-          </tbody>
-        </table>
-      </div>
-    `;
-  } catch(e) { showError(e) }
-}
-
-// ============== PORTFOLIOS ==============
-let portfolioFilter = 'all';
-
-async function renderPortfolios(){
-  try {
-    let q = 'portfolios?select=*&order=updated_at.desc';
-    if(portfolioFilter !== 'all') q += `&brand=eq.${portfolioFilter}`;
-    const items = await api('GET', q);
-    
-    $('#content').innerHTML = `
-      <div class="card">
-        <div class="card-head">
-          <h3>포트폴리오 관리</h3>
-          <button class="btn btn-primary btn-sm" onclick="editPortfolio()">+ 새 프로젝트</button>
-        </div>
-        <div class="filters">
-          ${['all','glsori','gongan','mudae'].map(f=>`
-            <button class="filter-btn ${portfolioFilter===f?'active':''}" onclick="portfolioFilter='${f}';renderPortfolios()">${f==='all'?'전체':CAT[f].ko}</button>
-          `).join('')}
-        </div>
-        ${items.length === 0 ? `
-          <div class="empty">
-            <div class="ico">📋</div>
-            <h4>등록된 프로젝트가 없습니다</h4>
-            <p>"새 프로젝트" 버튼을 눌러 첫 포트폴리오를 등록해보세요.</p>
-          </div>
-        ` : `
-          <table>
-            <thead><tr>
-              <th style="width:60px"></th>
-              <th>제목 / 학교</th>
-              <th style="width:90px">분류</th>
-              <th style="width:60px">연도</th>
-              <th style="width:80px">상태</th>
-              <th style="width:90px">관리</th>
-            </tr></thead>
-            <tbody>
-              ${items.map(p=>`
-                <tr>
-                  <td>${p.cover_image_url ? `<img src="${p.cover_image_url}" style="width:48px;height:32px;object-fit:cover;border-radius:4px">` : `<div style="width:48px;height:32px;background:#eee;border-radius:4px"></div>`}</td>
-                  <td>
-                    <div style="font-weight:600">${esc(p.title)}</div>
-                    <div style="font-size:11px;color:#888">${esc(p.client_name)}${p.sub_category?' · '+esc(p.sub_category):''}</div>
-                  </td>
-                  <td><span class="tag ${p.brand==='glsori'?'r':p.brand==='gongan'?'g':'b'}">${CAT[p.brand]?.ko || p.brand}</span></td>
-                  <td style="font-family:monospace">${p.year}</td>
-                  <td><span class="tag ${p.status}">${p.status==='published'?'공개':p.status==='draft'?'임시':'보관'}</span></td>
-                  <td>
-                    <div class="row-actions">
-                      <button class="icon-btn" onclick="editPortfolio('${p.id}')" title="수정">✎</button>
-                      <button class="icon-btn danger" onclick="deletePortfolio('${p.id}', '${esc(p.title)}')" title="삭제">×</button>
-                    </div>
-                  </td>
-                </tr>
-              `).join('')}
-            </tbody>
-          </table>
-        `}
-      </div>
-    `;
-  } catch(e) { showError(e) }
-}
-
-async function editPortfolio(id){
-  let item = { brand: 'glsori', year: new Date().getFullYear(), status: 'draft', is_featured: false };
-  if(id){
-    const r = await api('GET', `portfolios?id=eq.${id}&select=*`);
-    item = r[0];
-  }
-  
-  openModal(`
-    <div class="modal-head">
-      <h3>${id ? '프로젝트 수정' : '새 프로젝트'}</h3>
-      <button class="modal-close" onclick="closeModal()">×</button>
-    </div>
-    <div class="modal-body">
-      <div class="field">
-        <label>대표 이미지</label>
-        <div class="upload-area ${item.cover_image_url?'has-image':''}" id="uploadArea">
-          ${item.cover_image_url ? `<img src="${item.cover_image_url}"><button type="button" class="remove-img" id="removeImg" title="이미지 삭제">×</button>` : `<div class="placeholder"><div class="ico">📷</div>클릭하거나 이미지를 끌어다 놓으세요<br><span class="drag-hint">JPG · PNG · WebP · 큰 사진은 자동으로 줄여서 올려요 (최대 30MB)</span></div>`}
-        </div>
-        <input type="file" id="coverFile" accept="image/jpeg,image/png,image/webp" style="display:none">
-        <input type="hidden" id="coverUrl" value="${item.cover_image_url||''}">
-      </div>
-      <div class="field"><label>프로젝트명 <span class="req">*</span></label><input type="text" id="pf_title" value="${esc(item.title||'')}" placeholder="예: ○○초등학교 BI 리뉴얼"></div>
-      <div class="field-row">
-        <div class="field"><label>학교/클라이언트 <span class="req">*</span></label><input type="text" id="pf_client" value="${esc(item.client_name||'')}" placeholder="○○초등학교"></div>
-        <div class="field"><label>연도</label><input type="number" id="pf_year" value="${item.year||new Date().getFullYear()}"></div>
-      </div>
-      <div class="field-row">
-        <div class="field"><label>브랜드 <span class="req">*</span></label>
-          <select id="pf_brand">
-            <option value="glsori" ${item.brand==='glsori'?'selected':''}>글소리 (인쇄·BI)</option>
-            <option value="gongan" ${item.brand==='gongan'?'selected':''}>공간소리 (공간)</option>
-            <option value="mudae" ${item.brand==='mudae'?'selected':''}>무대소리 (행사)</option>
-          </select>
-        </div>
-        <div class="field"><label>세부 분류</label><input type="text" id="pf_sub" value="${esc(item.sub_category||'')}" placeholder="BI·도서관·졸업식"></div>
-      </div>
-      <div class="field"><label>설명</label><textarea id="pf_desc" placeholder="프로젝트 개요와 결과물">${esc(item.description||'')}</textarea></div>
-      <div class="field-row">
-        <div class="field"><label>진행기간 (개월)</label><input type="number" id="pf_period" value="${item.period_months||''}"></div>
-        <div class="field"><label>공개 상태</label>
-          <select id="pf_status">
-            <option value="published" ${item.status==='published'?'selected':''}>공개</option>
-            <option value="draft" ${item.status==='draft'?'selected':''}>임시저장</option>
-            <option value="archived" ${item.status==='archived'?'selected':''}>보관</option>
-          </select>
-        </div>
-      </div>
-      <div class="field">
-        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;letter-spacing:0">
-          <input type="checkbox" id="pf_featured" ${item.is_featured?'checked':''} style="width:auto;margin:0">
-          <span style="font-size:13px;color:#1a1a1a;font-weight:500">⭐ 홈 화면 추천 프로젝트로 노출</span>
-        </label>
-      </div>
-    </div>
-    <div class="modal-foot">
-      <button class="btn" onclick="closeModal()">취소</button>
-      <button class="btn btn-primary" onclick="savePortfolio('${id||''}')">저장</button>
-    </div>
-  `);
-  
-  // File upload — click + drag-and-drop + auto-resize + remove + validation
-  (function setupUploadArea(){
-    const area = $('#uploadArea');
-    const input = $('#coverFile');
-    if(!area || !input) return;
-
-    const MAX_SIZE = 30 * 1024 * 1024;        // 30MB input limit (raw camera files)
-    const RESIZE_THRESHOLD = 500 * 1024;       // resize if > 500KB
-    const MAX_DIM = 1920;                      // longest side after resize
-    const JPEG_QUALITY = 0.85;
-    const ALLOWED = ['image/jpeg','image/png','image/webp'];
-
-    const placeholderHTML = '<div class="placeholder"><div class="ico">📷</div>클릭하거나 이미지를 끌어다 놓으세요<br><span class="drag-hint">JPG · PNG · WebP · 큰 사진은 자동으로 줄여서 올려요 (최대 30MB)</span></div>';
-
-    // Auto-resize large images using canvas before upload
-    async function resizeImage(file){
-      // Small files pass through unchanged
-      if(file.size < RESIZE_THRESHOLD) return file;
-      return new Promise((resolve, reject) => {
-        const url = URL.createObjectURL(file);
-        const img = new Image();
-        const cleanup = ()=> URL.revokeObjectURL(url);
-        img.onload = () => {
-          let { width, height } = img;
-          const scale = Math.min(1, MAX_DIM / Math.max(width, height));
-          width = Math.round(width * scale);
-          height = Math.round(height * scale);
-          const canvas = document.createElement('canvas');
-          canvas.width = width;
-          canvas.height = height;
-          const ctx = canvas.getContext('2d');
-          ctx.imageSmoothingEnabled = true;
-          ctx.imageSmoothingQuality = 'high';
-          ctx.drawImage(img, 0, 0, width, height);
-          canvas.toBlob((blob) => {
-            cleanup();
-            if(!blob){ reject(new Error('이미지 압축 실패')); return; }
-            // If JPEG version is bigger than original (rare, simple PNGs), keep original
-            if(blob.size >= file.size){
-              resolve(file);
-              return;
-            }
-            const baseName = (file.name.replace(/\.[^.]+$/,'') || 'image');
-            const newFile = new File([blob], baseName + '.jpg', { type: 'image/jpeg', lastModified: Date.now() });
-            resolve(newFile);
-          }, 'image/jpeg', JPEG_QUALITY);
-        };
-        img.onerror = () => { cleanup(); reject(new Error('이미지를 읽을 수 없습니다')); };
-        img.src = url;
-      });
+  grids.forEach(grid => {
+    if (!grid) return;
+    grid.innerHTML = '';
+    if (items.length === 0) {
+      grid.innerHTML = `
+        <div class="empty-state">
+          <div class="icon">📋</div>
+          <h3>아직 등록된 프로젝트가 없습니다</h3>
+          <p>관리자 페이지에서 첫 포트폴리오를 등록해보세요.</p>
+        </div>`;
+      return;
     }
-
-    async function handleFile(originalFile){
-      if(!originalFile) return;
-      if(!ALLOWED.includes(originalFile.type)){
-        toast('JPG, PNG, WebP 형식만 업로드할 수 있습니다', 'error');
-        return;
-      }
-      if(originalFile.size > MAX_SIZE){
-        toast(`파일 용량이 너무 큽니다 (${(originalFile.size/1024/1024).toFixed(1)}MB / 최대 30MB)`, 'error');
-        return;
-      }
-
-      area.classList.remove('has-image','dragover');
-      const origKB = (originalFile.size/1024).toFixed(0);
-      const willResize = originalFile.size >= RESIZE_THRESHOLD;
-      area.innerHTML = `<div class="placeholder"><div class="ico">${willResize?'🗜️':'⏳'}</div>${willResize?'이미지 압축 중...':'업로드 중...'}<br><span class="drag-hint">${esc(originalFile.name)} (${origKB}KB)</span></div>`;
-
-      try {
-        // Step 1: auto-resize if needed
-        const file = await resizeImage(originalFile);
-        const reducedInfo = file !== originalFile
-          ? `${(originalFile.size/1024/1024).toFixed(1)}MB → ${(file.size/1024).toFixed(0)}KB`
-          : `${origKB}KB`;
-
-        // Step 2: upload
-        area.innerHTML = `<div class="placeholder"><div class="ico">⬆️</div>업로드 중...<br><span class="drag-hint">${reducedInfo}</span></div>`;
-
-        const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
-        const base = file.name.replace(/\.[^.]+$/,'').replace(/[^a-zA-Z0-9가-힣_-]/g,'_').slice(0,40) || 'image';
-        const path = `${Date.now()}_${base}.${ext}`;
-        const url = await uploadFile('portfolio-images', path, file);
-        $('#coverUrl').value = url;
-        area.classList.add('has-image');
-        area.innerHTML = `<img src="${url}"><button type="button" class="remove-img" id="removeImg" title="이미지 삭제">×</button>`;
-        bindRemove();
-        toast(`업로드 완료 (${reducedInfo})`, 'success');
-      } catch(err){
-        console.error('[upload]', err);
-        area.classList.remove('has-image');
-        area.innerHTML = `<div class="placeholder"><div class="ico">⚠️</div>업로드 실패 — 클릭해서 다시 시도<br><span class="drag-hint" style="color:#c53030">${esc(err.message)}</span></div>`;
-        toast('이미지 업로드 실패: '+err.message, 'error');
-      } finally {
-        input.value = '';
-      }
-    }
-
-    function bindRemove(){
-      const btn = $('#removeImg');
-      if(!btn) return;
-      btn.onclick = (e)=>{
-        e.stopPropagation();
-        $('#coverUrl').value = '';
-        area.classList.remove('has-image');
-        area.innerHTML = placeholderHTML;
-        input.value = '';
-      };
-    }
-    bindRemove();
-
-    // Click → file picker (ignore clicks on remove button)
-    area.addEventListener('click', (e)=>{
-      if(e.target.closest('.remove-img')) return;
-      input.click();
+    items.slice(0, 12).forEach((p, i) => {
+      const grad = gradients[i % gradients.length];
+      grid.innerHTML += `
+        <a class="ppg-item">
+          <div class="ppg-img ${grad}"><div class="img-pat"></div></div>
+          <div class="ppg-overlay">
+            <span class="ppg-cat ${p.brand}">${(p.brand || 'glsori').toUpperCase()}</span>
+            <h4 class="ppg-title">${p.title}</h4>
+            <p class="ppg-en">${p.client_name || ''} · ${p.year || ''}</p>
+          </div>
+        </a>`;
     });
-
-    // File picker change
-    input.addEventListener('change', (e)=> handleFile(e.target.files[0]));
-
-    // Drag and drop
-    ['dragenter','dragover'].forEach(ev=>{
-      area.addEventListener(ev, (e)=>{
-        e.preventDefault(); e.stopPropagation();
-        area.classList.add('dragover');
-      });
-    });
-    ['dragleave','dragend'].forEach(ev=>{
-      area.addEventListener(ev, (e)=>{
-        e.preventDefault(); e.stopPropagation();
-        area.classList.remove('dragover');
-      });
-    });
-    area.addEventListener('drop', (e)=>{
-      e.preventDefault(); e.stopPropagation();
-      area.classList.remove('dragover');
-      const file = e.dataTransfer.files[0];
-      handleFile(file);
-    });
-
-    // Prevent browser from opening files dropped outside the upload area
-    const stopOutside = (e)=>{ if(!e.target.closest('#uploadArea')) e.preventDefault(); };
-    window.addEventListener('dragover', stopOutside);
-    window.addEventListener('drop', stopOutside);
-  })();
+  });
 }
 
-async function savePortfolio(id){
-  const data = {
-    title: $('#pf_title').value.trim(),
-    client_name: $('#pf_client').value.trim(),
-    brand: $('#pf_brand').value,
-    sub_category: $('#pf_sub').value.trim() || null,
-    year: +$('#pf_year').value,
-    period_months: +$('#pf_period').value || null,
-    description: $('#pf_desc').value.trim() || null,
-    cover_image_url: $('#coverUrl').value || null,
-    is_featured: $('#pf_featured').checked,
-    status: $('#pf_status').value,
-    updated_at: new Date().toISOString(),
-  };
-  if(!data.title || !data.client_name) return toast('필수 항목을 입력해주세요', 'error');
-  
-  try {
-    if(id) await api('PATCH', `portfolios?id=eq.${id}`, data);
-    else { data.created_by = user.id; await api('POST', 'portfolios', data) }
-    closeModal();
-    toast(id?'수정되었습니다':'등록되었습니다', 'success');
-    renderPortfolios();
-  } catch(e){ toast('저장 실패: '+e.message, 'error') }
-}
-
-async function deletePortfolio(id, title){
-  if(!confirm(`"${title}" 프로젝트를 삭제하시겠습니까?`)) return;
-  try {
-    await api('DELETE', `portfolios?id=eq.${id}`);
-    toast('삭제되었습니다', 'success');
-    renderPortfolios();
-  } catch(e){ toast('삭제 실패: '+e.message, 'error') }
-}
-
-// ============== Q&A ==============
-let qnaFilter = 'all';
-
-async function renderQna(){
-  try {
-    let q = 'qna_posts?select=*&order=created_at.desc';
-    if(qnaFilter === 'pending') q += '&status=eq.pending';
-    else if(qnaFilter !== 'all') q += `&brand=eq.${qnaFilter}`;
-    const items = await api('GET', q);
-    
-    $('#content').innerHTML = `
-      <div class="card">
-        <div class="card-head">
-          <h3>Q&A 게시판</h3>
-          <span class="ct">${items.length}건</span>
-        </div>
-        <div class="filters">
-          <button class="filter-btn ${qnaFilter==='all'?'active':''}" onclick="qnaFilter='all';renderQna()">전체</button>
-          <button class="filter-btn ${qnaFilter==='pending'?'active':''}" onclick="qnaFilter='pending';renderQna()">미답변</button>
-          <button class="filter-btn ${qnaFilter==='glsori'?'active':''}" onclick="qnaFilter='glsori';renderQna()">글소리</button>
-          <button class="filter-btn ${qnaFilter==='gongan'?'active':''}" onclick="qnaFilter='gongan';renderQna()">공간소리</button>
-          <button class="filter-btn ${qnaFilter==='mudae'?'active':''}" onclick="qnaFilter='mudae';renderQna()">무대소리</button>
-        </div>
-        ${items.length === 0 ? `<div class="empty"><div class="ico">💬</div><h4>해당하는 문의가 없습니다</h4></div>` : items.map(q=>`
-          <div style="padding:18px 20px;border-bottom:1px solid #f5f5f5">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-              <div>
-                <span class="tag ${q.brand==='glsori'?'r':q.brand==='gongan'?'g':q.brand==='mudae'?'b':'k'}">${CAT[q.brand]?.ko||q.brand}</span>
-                <span style="margin-left:8px;font-weight:600">${esc(q.title)}</span>
-              </div>
-              <div style="display:flex;align-items:center;gap:8px">
-                <span style="font-size:11px;color:#888;font-family:monospace">${esc(q.author_name)} · ${fmtDate(q.created_at)}</span>
-                ${q.status==='pending' ? `<button class="btn btn-primary btn-sm" onclick="answerQna('${q.id}')">답변 작성</button>` : `<span class="tag answered">답변완료</span>`}
-              </div>
-            </div>
-            <div class="qa-thread qa-q"><span class="qa-label">Q.</span>${esc(q.content)}</div>
-            ${q.answer ? `<div class="qa-thread qa-a"><span class="qa-label" style="color:#C8302B">A.</span>${esc(q.answer)}<div class="qa-meta">답변자: ${esc(q.answered_by||'미상')} · ${fmtDateTime(q.answered_at)}</div></div>` : ''}
-          </div>
-        `).join('')}
-      </div>
-    `;
-  } catch(e){ showError(e) }
-}
-
-async function answerQna(id){
-  const r = await api('GET', `qna_posts?id=eq.${id}&select=*`);
-  const item = r[0];
-  openModal(`
-    <div class="modal-head">
-      <h3>Q&A 답변 작성</h3>
-      <button class="modal-close" onclick="closeModal()">×</button>
-    </div>
-    <div class="modal-body">
-      <div class="qa-thread qa-q" style="margin-bottom:20px">
-        <div style="font-weight:600;margin-bottom:8px">${esc(item.title)}</div>
-        <div><span class="qa-label">Q.</span>${esc(item.content)}</div>
-        <div class="qa-meta">${esc(item.author_name)} · ${fmtDate(item.created_at)}</div>
-      </div>
-      <div class="field">
-        <label>답변 내용 <span class="req">*</span></label>
-        <textarea id="qa_answer" style="min-height:160px" placeholder="고객 문의에 대한 답변을 작성해주세요. 구체적 일정·견적 범위·연락 방법을 포함하면 좋습니다."></textarea>
-      </div>
-      <div style="font-size:11px;color:#888">답변자: <b>${esc(user.name)} ${esc(user.role)}</b></div>
-    </div>
-    <div class="modal-foot">
-      <button class="btn" onclick="closeModal()">취소</button>
-      <button class="btn btn-primary" onclick="saveQnaAnswer('${id}')">답변 등록</button>
-    </div>
-  `);
-}
-
-async function saveQnaAnswer(id){
-  const answer = $('#qa_answer').value.trim();
-  if(!answer) return toast('답변을 입력해주세요', 'error');
-  try {
-    await api('PATCH', `qna_posts?id=eq.${id}`, {
-      answer,
-      answered_by: user.id,
-      answered_at: new Date().toISOString(),
-      status: 'answered',
-    });
-    closeModal();
-    toast('답변이 등록되었습니다', 'success');
-    loadBadges();
-    renderQna();
-  } catch(e){ toast('등록 실패: '+e.message, 'error') }
-}
-
-// ============== INQUIRIES ==============
-let inqFilter = 'all';
-
-async function renderInquiries(){
-  try {
-    let q = 'inquiries?select=*&order=created_at.desc';
-    if(inqFilter !== 'all') q += `&status=eq.${inqFilter}`;
-    const items = await api('GET', q);
-    
-    $('#content').innerHTML = `
-      <div class="card">
-        <div class="card-head">
-          <h3>견적·상담 문의</h3>
-          <span class="ct">${items.length}건</span>
-        </div>
-        <div class="filters">
-          ${['all','new','contacted','quoted','won','lost'].map(f=>`
-            <button class="filter-btn ${inqFilter===f?'active':''}" onclick="inqFilter='${f}';renderInquiries()">${({all:'전체',new:'신규',contacted:'연락중',quoted:'견적발송',won:'수주',lost:'실주'}[f])}</button>
-          `).join('')}
-        </div>
-        ${items.length === 0 ? `<div class="empty"><div class="ico">📬</div><h4>해당하는 문의가 없습니다</h4><p>홈페이지 Contact 폼이 제출되면 여기 표시됩니다.</p></div>` : `
-          <table>
-            <thead><tr>
-              <th style="width:90px">접수일</th>
-              <th>학교 / 담당자</th>
-              <th>제목</th>
-              <th style="width:120px">연락처</th>
-              <th style="width:90px">상태</th>
-              <th style="width:60px"></th>
-            </tr></thead>
-            <tbody>
-              ${items.map(i=>`
-                <tr style="cursor:pointer" onclick="viewInquiry('${i.id}')">
-                  <td style="font-family:monospace;font-size:11px;color:#888">${fmtDate(i.created_at)}</td>
-                  <td><b>${esc(i.school_name)}</b><div style="font-size:11px;color:#888">${esc(i.contact_person)}</div></td>
-                  <td style="font-size:12px">${esc(i.subject || '(제목 없음)')}</td>
-                  <td style="font-family:monospace;font-size:11px">${esc(i.phone)}</td>
-                  <td><span class="tag ${i.status}">${({new:'신규',contacted:'연락중',quoted:'견적발송',won:'수주',lost:'실주',closed:'종료'}[i.status])}</span></td>
-                  <td>→</td>
-                </tr>
-              `).join('')}
-            </tbody>
-          </table>
-        `}
-      </div>
-    `;
-  } catch(e){ showError(e) }
-}
-
-async function viewInquiry(id){
-  const r = await api('GET', `inquiries?id=eq.${id}&select=*`);
-  const i = r[0];
-  openModal(`
-    <div class="modal-head">
-      <h3>문의 상세</h3>
-      <button class="modal-close" onclick="closeModal()">×</button>
-    </div>
-    <div class="modal-body">
-      <div style="background:#fafafa;border-radius:8px;padding:18px;margin-bottom:20px">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:13px">
-          <div><div style="font-size:10px;color:#888;letter-spacing:1px;margin-bottom:2px">학교명</div><b>${esc(i.school_name)}</b></div>
-          <div><div style="font-size:10px;color:#888;letter-spacing:1px;margin-bottom:2px">담당자</div><b>${esc(i.contact_person)}</b></div>
-          <div><div style="font-size:10px;color:#888;letter-spacing:1px;margin-bottom:2px">전화</div><a href="tel:${i.phone}">${esc(i.phone)}</a></div>
-          <div><div style="font-size:10px;color:#888;letter-spacing:1px;margin-bottom:2px">이메일</div><a href="mailto:${i.email}">${esc(i.email)}</a></div>
-        </div>
-      </div>
-      <div class="field"><label>제목</label><div style="padding:10px 12px;background:#fafafa;border-radius:6px">${esc(i.subject || '(없음)')}</div></div>
-      <div class="field"><label>문의 내용</label><div style="padding:14px;background:#fafafa;border-radius:6px;white-space:pre-wrap;line-height:1.7">${esc(i.content)}</div></div>
-      ${i.reference_url ? `<div class="field"><label>참고 URL</label><a href="${esc(i.reference_url)}" target="_blank" style="color:#1E3A8A">${esc(i.reference_url)}</a></div>` : ''}
-      <hr style="border:none;border-top:1px solid #eee;margin:20px 0">
-      <div class="field"><label>처리 상태</label>
-        <select id="inq_status">
-          <option value="new" ${i.status==='new'?'selected':''}>신규</option>
-          <option value="contacted" ${i.status==='contacted'?'selected':''}>연락중</option>
-          <option value="quoted" ${i.status==='quoted'?'selected':''}>견적발송</option>
-          <option value="won" ${i.status==='won'?'selected':''}>수주</option>
-          <option value="lost" ${i.status==='lost'?'selected':''}>실주</option>
-          <option value="closed" ${i.status==='closed'?'selected':''}>종료</option>
-        </select>
-      </div>
-      <div class="field"><label>내부 메모</label><textarea id="inq_notes" placeholder="처리 내용·견적·통화 내용 등 (고객에게 보이지 않음)">${esc(i.notes||'')}</textarea></div>
-      <div style="font-size:11px;color:#888;font-family:monospace">접수: ${fmtDateTime(i.created_at)}</div>
-    </div>
-    <div class="modal-foot">
-      <button class="btn" onclick="closeModal()">닫기</button>
-      <button class="btn btn-primary" onclick="saveInquiry('${id}')">저장</button>
-    </div>
-  `);
-}
-
-async function saveInquiry(id){
-  try {
-    await api('PATCH', `inquiries?id=eq.${id}`, {
-      status: $('#inq_status').value,
-      notes: $('#inq_notes').value.trim() || null,
-      updated_at: new Date().toISOString(),
-      assigned_to: user.id,
-    });
-    closeModal();
-    toast('업데이트되었습니다', 'success');
-    loadBadges();
-    renderInquiries();
-  } catch(e){ toast('실패: '+e.message, 'error') }
-}
-
-// ============== HERO ==============
-async function renderHero(){
-  try {
-    const items = await api('GET', 'hero_slides?select=*&order=display_order');
-    $('#content').innerHTML = `
-      <div class="card">
-        <div class="card-head">
-          <h3>히어로 슬라이드</h3>
-          <span class="ct">활성 ${items.filter(i=>i.is_active).length} / ${items.length}</span>
-        </div>
-        <div style="padding:14px 20px;background:#fafafa;font-size:12px;color:#666;border-bottom:1px solid var(--line)">홈 상단에 5초마다 자동 전환되는 슬라이드입니다. 비활성화하면 노출되지 않습니다.</div>
-        ${items.map((h,idx)=>`
-          <div style="display:flex;gap:16px;padding:16px 20px;border-bottom:1px solid #f5f5f5;align-items:center">
-            <div style="width:80px;height:50px;background:linear-gradient(135deg,#3d4f6b,#1a2638);border-radius:6px;display:flex;align-items:center;justify-content:center;color:#fff;font-family:monospace;font-size:11px;flex-shrink:0">SLIDE ${String(h.display_order).padStart(2,'0')}</div>
-            <div style="flex:1;min-width:0">
-              <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
-                <span style="background:#eee;padding:2px 8px;border-radius:99px;font-size:10px;font-weight:700">${esc(h.title)}</span>
-                <span style="font-size:11px;color:#888;font-family:monospace">→ /${esc(h.link_page)}</span>
-              </div>
-              <div style="font-weight:600;font-size:14px">${esc(h.main_copy)}</div>
-              <div style="font-size:12px;color:#888;margin-top:2px">${esc(h.sub_copy||'')}</div>
-            </div>
-            <button class="btn ${h.is_active?'':'btn-k'} btn-sm" onclick="toggleHero(${h.id}, ${!h.is_active})" style="${h.is_active?'background:#dcfce7;color:#166534;border-color:#bbf7d0':''}">
-              ${h.is_active?'● 활성':'○ 비활성'}
-            </button>
-          </div>
-        `).join('')}
-      </div>
-    `;
-  } catch(e){ showError(e) }
-}
-
-async function toggleHero(id, newState){
-  try {
-    await api('PATCH', `hero_slides?id=eq.${id}`, { is_active: newState, updated_at: new Date().toISOString() });
-    toast(newState?'활성화됨':'비활성화됨', 'success');
-    renderHero();
-  } catch(e){ toast('실패: '+e.message, 'error') }
-}
-
-// ============== SETTINGS ==============
-async function renderSettings(){
-  try {
-    const r = await api('GET', 'site_settings?select=*&limit=1');
-    const s = r[0];
-    $('#content').innerHTML = `
-      <div class="card">
-        <div class="card-head"><h3>회사 기본 정보</h3><span class="ct">홈페이지 푸터·CTA에 자동 반영</span></div>
-        <div style="padding:24px">
-          <div class="field-row">
-            <div class="field"><label>회사명</label><input type="text" id="s_company" value="${esc(s.company_name||'')}"></div>
-            <div class="field"><label>대표자</label><input type="text" id="s_ceo" value="${esc(s.ceo||'')}"></div>
-          </div>
-          <div class="field-row">
-            <div class="field"><label>사업자번호</label><input type="text" id="s_bn" value="${esc(s.business_number||'')}" placeholder="000-00-00000"></div>
-            <div class="field"><label>설립연도</label><input type="number" id="s_founded" value="${s.founded_year||2008}"></div>
-          </div>
-          <div class="field"><label>본점 주소</label><input type="text" id="s_main" value="${esc(s.main_address||'')}"></div>
-          <div class="field"><label>지점 주소</label><input type="text" id="s_branch" value="${esc(s.branch_address||'')}"></div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-head"><h3>연락처</h3></div>
-        <div style="padding:24px">
-          <div class="field-row">
-            <div class="field"><label>이메일</label><input type="email" id="s_email" value="${esc(s.email||'')}"></div>
-            <div class="field"><label>대표 전화</label><input type="text" id="s_tel" value="${esc(s.tel||'')}"></div>
-          </div>
-          <div class="field-row">
-            <div class="field"><label>모바일</label><input type="text" id="s_mobile" value="${esc(s.mobile||'')}"></div>
-            <div class="field"><label>카카오톡 채널 URL</label><input type="text" id="s_kakao" value="${esc(s.kakao_channel_url||'')}"></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-head"><h3>대표 통계</h3><span class="ct">홈·About에 표시되는 숫자</span></div>
-        <div style="padding:24px">
-          <div class="field-row">
-            <div class="field"><label>누적 프로젝트</label><input type="number" id="s_proj" value="${s.stat_projects}"></div>
-            <div class="field"><label>교육청</label><input type="number" id="s_off" value="${s.stat_offices}"></div>
-          </div>
-          <div class="field-row">
-            <div class="field"><label>초등학교</label><input type="number" id="s_elem" value="${s.stat_elementary}"></div>
-            <div class="field"><label>중·고등학교</label><input type="number" id="s_mh" value="${s.stat_middle_high}"></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-head"><h3>브랜드 슬로건</h3></div>
-        <div style="padding:24px">
-          <div class="field"><label>한글 슬로건</label><input type="text" id="s_sko" value="${esc(s.slogan_ko||'')}"></div>
-          <div class="field"><label>영문 슬로건</label><input type="text" id="s_sen" value="${esc(s.slogan_en||'')}"></div>
-        </div>
-      </div>
-
-      <div style="text-align:right;margin-top:20px">
-        <button class="btn btn-primary" onclick="saveSettings()" style="padding:12px 32px">설정 저장</button>
-      </div>
-    `;
-  } catch(e){ showError(e) }
-}
-
-async function saveSettings(){
-  try {
-    await api('PATCH', 'site_settings?id=eq.1', {
-      company_name: $('#s_company').value,
-      ceo: $('#s_ceo').value,
-      business_number: $('#s_bn').value,
-      founded_year: +$('#s_founded').value || 2008,
-      main_address: $('#s_main').value,
-      branch_address: $('#s_branch').value,
-      email: $('#s_email').value,
-      tel: $('#s_tel').value,
-      mobile: $('#s_mobile').value,
-      kakao_channel_url: $('#s_kakao').value,
-      stat_projects: +$('#s_proj').value,
-      stat_offices: +$('#s_off').value,
-      stat_elementary: +$('#s_elem').value,
-      stat_middle_high: +$('#s_mh').value,
-      slogan_ko: $('#s_sko').value,
-      slogan_en: $('#s_sen').value,
-      updated_at: new Date().toISOString(),
-    });
-    toast('회사 정보가 저장되었습니다', 'success');
-  } catch(e){ toast('저장 실패: '+e.message, 'error') }
-}
-
-// ============== MODAL & HELPERS ==============
-function openModal(html){
-  const m = $('#modal');
-  m.innerHTML = `<div class="modal-panel">${html}</div>`;
-  m.classList.add('active');
-  m.onclick = (e)=>{ if(e.target===m) closeModal() };
-}
-function closeModal(){
-  $('#modal').classList.remove('active');
-  $('#modal').innerHTML = '';
-}
-function showError(e){
-  $('#content').innerHTML = `<div class="empty"><div class="ico">⚠️</div><h4>데이터를 불러올 수 없습니다</h4><p>${esc(e.message)}</p></div>`;
-}
-
-// ============== EVENT BINDINGS ==============
-$('#loginForm').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const btn = $('#loginBtn');
-  const err = $('#loginError');
-  btn.disabled = true; btn.textContent = '로그인 중...';
-  err.textContent = '';
-  try {
-    await login($('#loginEmail').value, $('#loginPassword').value);
-  } catch(e){
-    err.textContent = e.message;
-    btn.disabled = false; btn.textContent = '로그인';
+function renderClients(items) {
+  const grid = document.getElementById('clientsGrid');
+  const countEl = document.getElementById('clientsCount');
+  if (countEl) {
+    countEl.textContent = items.length > 0 ? `대표 클라이언트 ${items.length}곳` : '로딩 실패';
   }
-});
+  if (!grid) return;
+  grid.innerHTML = '';
+  items.forEach(c => {
+    grid.innerHTML += `
+      <div style="background:#fff;border:1px solid var(--line);padding:24px 18px;text-align:center;font-size:13px;font-weight:500">
+        ${c.name}
+        <div style="font-size:10px;color:#888;font-family:'Roboto Mono',monospace;margin-top:8px">${c.projects_count}건 · ${c.first_project_year}년~</div>
+      </div>`;
+  });
+}
 
-$('#logoutBtn').addEventListener('click', ()=>{
-  if(confirm('로그아웃 하시겠습니까?')) logout();
-});
-
-$$('.sb-item').forEach(el => {
-  el.addEventListener('click', (e) => {
+// ===== INTERACTIONS =====
+function showPage(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const target = document.querySelector(`.page[data-page="${page}"]`);
+  if (target) target.classList.add('active');
+  document.querySelectorAll('.nav-menu a').forEach(a => {
+    a.classList.toggle('active', a.dataset.page === page);
+  });
+  window.scrollTo({top:0, behavior:'instant'});
+  document.getElementById('hamburgerBtn')?.classList.remove('active');
+}
+document.addEventListener('click', e => {
+  const link = e.target.closest('[data-page]');
+  if (link) {
     e.preventDefault();
-    navigate(el.dataset.page);
-  });
+    showPage(link.dataset.page);
+  }
 });
 
-// ============== INIT ==============
-if(token && user){
-  showAdmin();
-} else {
-  showLogin();
-}
+document.getElementById('hamburgerBtn').addEventListener('click', () => {
+  alert('사이트맵은 v3.5에서 추가 예정');
+});
+
+// Inquiry form submit
+document.getElementById('inquiryForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const fd = new FormData(e.target);
+  const data = Object.fromEntries(fd);
+  const result = document.getElementById('inquiryResult');
+  result.textContent = '전송 중...';
+  result.style.color = '#888';
+  try {
+    await sbInsert('inquiries', data);
+    result.textContent = '✓ 문의가 정상 접수되었습니다. 24시간 내 회신드리겠습니다.';
+    result.style.color = 'var(--g)';
+    e.target.reset();
+  } catch (err) {
+    result.textContent = `전송 실패: ${err.message}`;
+    result.style.color = 'var(--r)';
+  }
+});
+
+// ===== INIT =====
+loadAll();
 </script>
 </body>
 </html>
