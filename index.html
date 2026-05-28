@@ -678,9 +678,13 @@ function renderPortfolio(items) {
     }
     items.slice(0, 12).forEach((p, i) => {
       const grad = gradients[i % gradients.length];
+      const imgUrl = p.cover_image_url || p.cover_url || p.image_url || '';
+      const imgLayer = imgUrl
+        ? `<div class="ppg-img" style="background-image:url('${imgUrl.replace(/'/g, "%27")}');background-size:cover;background-position:center"></div>`
+        : `<div class="ppg-img ${grad}"><div class="img-pat"></div></div>`;
       grid.innerHTML += `
         <a class="ppg-item">
-          <div class="ppg-img ${grad}"><div class="img-pat"></div></div>
+          ${imgLayer}
           <div class="ppg-overlay">
             <span class="ppg-cat ${p.brand}">${(p.brand || 'glsori').toUpperCase()}</span>
             <h4 class="ppg-title">${p.title}</h4>
